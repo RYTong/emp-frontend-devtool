@@ -1,0 +1,33 @@
+{
+  "name": "emp-frontend-devtool",
+  "main": "./lib/emp-frontend-devtool",
+  "version": "0.1.0",
+  "description": "EMP Frontend Development Environment",
+  "keywords": [],
+  "repository": "https://github.com/atom/emp-frontend-devtool",
+  "engines": {
+    "atom": ">=1.0.0 <2.0.0"
+  },
+  "providedServices": {
+    "atom.file-icons": {
+      "versions": {
+        "1.0.0": "getFileIconsProvider"
+      }
+    }
+  },
+  "consumedServices": {
+    "status-bar": {
+      "versions": {
+        "^1.0.0": "consumeStatusBar"
+      }
+    }
+  },
+  "dependencies": {
+    "atom-message-panel": "^1.2.7",
+    "html-escape": "^2.0.0",
+    "jquery": "^3.1.0",
+    "lodash": "^4.15.0",
+    "luaparse": "^0.2.1",
+    "shelljs": "^0.7.4"
+  }
+}

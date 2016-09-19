@@ -1,0 +1,5 @@
+{
+  "atom-workspace": {
+    "cmd-i": "emp-frontend-devtool:run-lua"
+  }
+}

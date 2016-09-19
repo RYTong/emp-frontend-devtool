@@ -1,0 +1,26 @@
+{
+  "context-menu": {
+    "li[is='tree-view-file'] [data-name$='.lua']": [
+      {
+        "label": "Run as Lua Script",
+        "command": "emp-frontend-devtool:run-lua"
+      }
+    ]
+  },
+  "menu": [
+    {
+      "label": "Packages",
+      "submenu": [
+        {
+          "label": "emp-frontend-devtool",
+          "submenu": [
+            {
+              "label": "Toggle",
+              "command": "emp-frontend-devtool:toggle"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

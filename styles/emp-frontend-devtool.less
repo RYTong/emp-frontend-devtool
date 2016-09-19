@@ -1,0 +1,35 @@
+// The ui-variables file is provided by base themes provided by Atom.
+//
+// See https://github.com/atom/atom-dark-ui/blob/master/styles/ui-variables.less
+// for a full listing of what's available.
+@import "ui-variables";
+
+.emp-frontend-devtool {
+}
+
+.lua-syntax-error-filename {
+  color: @text-color-error;
+}
+
+.lua-output-success-info {
+  color: @text-color-success;
+}
+
+.lua-output-error-info {
+  color: @text-color-error;
+}
+
+.luapack-running-filename {
+  color: @text-color-success;
+}
+
+.luapack-running-once-filename {
+  color: @text-color-warning;
+}
+
+atom-text-editor::shadow .gutter .line-number {
+  &.lua-error-line-number {
+    color: @text-color-error;
+    background-color: @background-color-error;
+  }
+}
