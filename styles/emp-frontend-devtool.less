@@ -27,9 +27,105 @@
   color: @text-color-warning;
 }
 
+.luapack-status-bar-invisible {
+  display: none;
+}
+
+.luapack-status-bar-visible {
+  display: block;
+  color: @text-color-success;
+}
+
 atom-text-editor::shadow .gutter .line-number {
   &.lua-error-line-number {
     color: @text-color-error;
     background-color: @background-color-error;
   }
+}
+
+.efd-client-log-status-bar {
+  cursor: pointer;
+}
+
+.efd-log-view {
+  .panel-heading {
+    display: flex;
+    padding: 0px @component-padding 0px @component-padding;
+    .headleft {
+      display: flex;
+      align-items: center;
+      label {
+        margin-right: @component-padding;
+      }
+      input {
+        margin-top: 0em;
+      }
+    }
+    .headright {
+      display: flex;
+      flex-grow: 1;
+      justify-content: flex-end;
+    }
+  }
+  .btn {
+    top: 0px;
+  }
+  .panel-body {
+    height: 200px;
+    overflow: scroll;
+  }
+}
+
+.efd-config-status-bar span {
+  margin-right: 1px;
+}
+
+.efd-config-view {
+  display: flex;
+  flex-direction: column;
+  .panel-heading {
+    display: flex;
+    .onoff {
+      display: flex;
+      flex-grow: 1;
+      justify-content: flex-end;
+    }
+  }
+  .panel-body {
+    display: flex;
+    flex-flow: column;
+    .config-item {
+      display: flex;
+      flex-flow: row;
+      justify-content: flex-start;
+      align-items: center;
+      .config-item-key {
+        width: 70px;
+        display: flex;
+        justify-content: flex-end;
+      }
+      .config-item-value {
+        margin-left: 5px;
+        flex-grow: 1;
+      }
+    }
+  }
+  .actions {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 20px;
+  }
+}
+
+.efd-server-ready {
+  background-color: @background-color-highlight;
+}
+
+.efd-server-running {
+  background-color: @background-color-success;
+  color: @base-border-color
+}
+
+.efd-server-eror {
+  background-color: @background-color-error;
 }
