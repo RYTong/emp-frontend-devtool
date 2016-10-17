@@ -38,7 +38,7 @@
   __luapack_require__.c = installedModules;
 
   -- Load entry module and return exports
-  return __luapack_require__({{ENTRYPOINT}});
+  return __luapack_require__(1);
 end
 --------------------------------------------------------------------------------
 )({
