@@ -4,7 +4,7 @@
   "version": "0.2.0",
   "description": "EMP Frontend Development Environment",
   "keywords": [],
-  "repository": "https://github.com/atom/emp-frontend-devtool",
+  "repository": "https://github.com/RYTong/emp-frontend-devtool",
   "engines": {
     "atom": ">=1.0.0 <2.0.0"
   },
