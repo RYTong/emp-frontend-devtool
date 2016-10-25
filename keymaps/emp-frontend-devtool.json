@@ -1,5 +1,6 @@
 {
   "atom-workspace": {
-    "cmd-i": "emp-frontend-devtool:run-lua"
+    "cmd-i": "emp-frontend-devtool:run-lua",
+    "ctrl-alt-o": "lua-debug:toggle"
   }
 }
