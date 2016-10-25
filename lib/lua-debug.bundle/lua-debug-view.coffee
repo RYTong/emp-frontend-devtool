@@ -89,7 +89,7 @@ module.exports = class LuaDebugView extends View
     @luaDebugUPVarView = new LuaDebugVarView(emp.UP_VAR_VIEW_NAME)
     @luaDebugGloVarView = new LuaDebugVarView(emp.GLOBAL_VAR_VIEW_NAME )
 
-    @disposable.add atom.commands.add "atom-workspace","lua-debug:toggle", => @toggle_show()
+    @disposable.add atom.commands.add "atom-workspace","emp-frontend-devtool:show_lua_debug_panel", => @toggle_show()
     @disposable.add @luaDebugVarView,@luaDebugUPVarView, @luaDebugGloVarView
     # @disposable.add @oDebugServer
     @vLuaDebugFlow.append @luaDebugVarView

@@ -9,9 +9,9 @@ module.exports =
   LUA_GRAMMAR:'source.lua'
 
   # ----------------------------- Atom Config --------------------------------
-  LUA_SERVER_HOST :'lua-debug.defLuaDebugServerHost'
-  LUA_SERVER_PORT :'lua-debug.defLuaDebugServerPort'
-  LUA_SERVER_TIMEOUT :'lua-debug.defLuaDebugServerTimeout'
+  LUA_SERVER_HOST :'emp-frontend-devtool.defLuaDebugServerHost'
+  LUA_SERVER_PORT :'emp-frontend-devtool.defLuaDebugServerPort'
+  LUA_SERVER_TIMEOUT :'emp-frontend-devtool.defLuaDebugServerTimeout'
 
   LUA_MSG_STEP:"STEP\n"
   LUA_MSG_RUN:"RUN\n"
