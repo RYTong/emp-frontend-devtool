@@ -100,6 +100,8 @@ module.exports = class DebugSocket
     oSocket.on 'close', (data)=>
       console.log "Client close:#{sRemoteAddress}"
       @delSocket(iPort)
+      @emitClientOff(_.size(@aSocketArr))
+
 
     oSocket.setTimeout DEFAULT_TIMEOUT, =>
       console.log("Client connect timeout")
@@ -111,6 +113,7 @@ module.exports = class DebugSocket
     for sEleData in newDataArr
       if sEleData.trim().length > 2
         @process_msg(sEleData)
+
   process_msg:(sData) ->
     # console.log sData
     # sNewData = sData.toString()
@@ -168,6 +171,7 @@ module.exports = class DebugSocket
       console.log "new client in +++++++ "
       iRPort = @store(oSocket)
       @getAllBP(iRPort)
+      @emitClientOn(_.size(@aSocketArr))
 
     @oServer.on 'listening', =>
       console.log '\nSocket Server start as:' + @oServer.address().address + ":" +@oServer.address().port
@@ -202,6 +206,7 @@ module.exports = class DebugSocket
     delete @aSocketArr[iPort]
 
 
+
   send:(sMsg)->
     console.log @aSocketArr, sMsg
     for k, oSocket of @aSocketArr
@@ -225,8 +230,6 @@ module.exports = class DebugSocket
       for k, aBPList of oBPMaps
         for iL, oBP of aBPList
           @send_specify(oSocket, oBP.addCommand())
-
-
 
   resetState:() ->
     @bServerState = false
@@ -260,3 +263,16 @@ module.exports = class DebugSocket
 
   onRTInfo:(callback) ->
     @emitter.on 'get-runtime-info', callback
+
+  # 修改页面显示状态
+  emitClientOn:(iSize) =>
+    @emitter.emit 'set-client-on', {size:iSize}
+
+  onClientOn:(callback) ->
+    @emitter.on 'set-client-on', callback
+
+  emitClientOff:(iSize) =>
+    @emitter.emit 'set-client-off', {size:iSize}
+
+  onClientOff:(callback) ->
+    @emitter.on 'set-client-off', callback

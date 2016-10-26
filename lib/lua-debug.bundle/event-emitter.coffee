@@ -74,7 +74,11 @@ class CodeEventEmitter
       @oBreakpointStore.activeEditor(e.name, e.line)
       @luaDebugView.refresh_variable(e.name, e.variable)
 
+    @disposable.add @oDebugServer.onClientOn (e) =>
+      @luaDebugView.show_client_state_on(e)
 
+    @disposable.add @oDebugServer.onClientOff (e) =>
+      @luaDebugView.show_client_state_off(e)
 
 
   doBPEmit:(@oBreakpointStore) ->

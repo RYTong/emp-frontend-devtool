@@ -4,9 +4,13 @@ BPEleView = require './bp-ele-view'
 LuaDebugVarView = require './variable/lua-variable-view'
 emp = require './global/emp'
 
+
+
 module.exports = class LuaDebugView extends View
   modalPanel:null
   aBPMap:null
+  client_on: "#66FF33"
+  client_off: "#FF1919"
 
   @content: ->
     @div class: 'lua-debug-view tool-panel',=>
@@ -37,16 +41,16 @@ module.exports = class LuaDebugView extends View
               @div class: "state-div-content", =>
                 @label class: "debug-label", "Server State   : "
                 @label outlet:"vServerState", class: "debug-label-content", "--"
-              @div class: 'controls', =>
-                @div class: 'setting-editor-container', =>
-                  @subview 'vMsgEditor', new TextEditorView(mini: true, attributes: {id: 'msg', type: 'string'}, placeholderText: 'Send Msg')
-              # @div class: "state-div-content", =>
-              #   @label class: "debug-label", "Client Number: "
-              #   @label outlet:"emp_cl_no", class: "debug-label-content", ""
+              # @div class: 'controls', =>
+              #   @div class: 'setting-editor-container', =>
+              #     @subview 'vMsgEditor', new TextEditorView(mini: true, attributes: {id: 'msg', type: 'string'}, placeholderText: 'Send Msg')
+              @div class: "state-div-content", =>
+                @label class: "debug-label", "Client State: "
+                @label outlet:"vClientState", class: "debug-label-content", "--"
               @button class: 'btn btn-else btn-error inline-block-tight', click: 'stop_server', "Stop Server"
-              @button class: 'btn btn-else btn-info inline-block-tight', click: 'send_msg', "Send"
-            @div class: "server-con panel-body padded",  =>
-              @button class: 'btn btn-else btn-primary inline-block-tight ', click: 'run_code', "Run Code In Atom"
+            #   @button class: 'btn btn-else btn-info inline-block-tight', click: 'send_msg', "Send"
+            # @div class: "server-con panel-body padded",  =>
+            #   @button class: 'btn btn-else btn-primary inline-block-tight ', click: 'run_code', "Run Code In Atom"
             @div class: "server-con panel-body padded",  =>
               @div class: "control-btn-group btn-group" ,=>
                 @button class: 'btn icon icon-playback-play btn-else', title:"Run Until Next Breakpoint" ,click: 'send_run'
@@ -89,9 +93,12 @@ module.exports = class LuaDebugView extends View
     @luaDebugUPVarView = new LuaDebugVarView(emp.UP_VAR_VIEW_NAME)
     @luaDebugGloVarView = new LuaDebugVarView(emp.GLOBAL_VAR_VIEW_NAME )
 
+    console.log @luaDebugVarView
+
     @disposable.add atom.commands.add "atom-workspace","emp-frontend-devtool:show_lua_debug_panel", => @toggle_show()
-    @disposable.add @luaDebugVarView,@luaDebugUPVarView, @luaDebugGloVarView
+    # @disposable.add @luaDebugVarView,@luaDebugUPVarView, @luaDebugGloVarView
     # @disposable.add @oDebugServer
+
     @vLuaDebugFlow.append @luaDebugVarView
     @vLuaDebugFlow.append @luaDebugUPVarView
     @vLuaDebugFlow.append @luaDebugGloVarView
@@ -160,6 +167,7 @@ module.exports = class LuaDebugView extends View
 
   stop_server:(event, element) ->
     @emitter.emit 'stop_server'
+
     # @oDebugServer.close()
     # @show_server_panel()
 
@@ -173,6 +181,15 @@ module.exports = class LuaDebugView extends View
 
     @vServerConfView.hide()
     @vServerStateView.show()
+    @show_client_state_off()
+
+  show_client_state_on:() =>
+    @vClientState["context"].innerHTML = "On"
+    @vClientState.css('color', @client_on)
+
+  show_client_state_off:() =>
+    @vClientState["context"].innerHTML = "Off"
+    @vClientState.css('color', @client_off)
 
   refresh_variable:(fFileName, sVariable) =>
     # console.log "show variable:+++++++", fFileName, sVariable
