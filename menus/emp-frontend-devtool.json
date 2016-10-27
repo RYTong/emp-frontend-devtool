@@ -21,6 +21,20 @@
           ]
         }
       ]
+    },
+    {
+      "label": "Emp",
+      "submenu": [
+        {
+          "label": "Lua Debug",
+          "submenu": [
+            {
+              "label": "Show Debugger",
+              "command": "emp-frontend-devtool:show_lua_debug_panel"
+            }
+          ]
+        }
+      ]
     }
   ]
 }
