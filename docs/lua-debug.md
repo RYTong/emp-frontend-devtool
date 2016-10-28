@@ -12,7 +12,6 @@
 
 3. 在需要调试的代码中添加 `require("mobdebug").start()` (如需特意指定 `Host` 和` Port`, 可以通过 `require("mobdebug").start(Host, Port)`, 来启动, 其中` Host` 默认为` localhost`, `Port` 默认为`8172`)
 
-  ![Before Start](https://raw.githubusercontent.com/wiki/RYTong/emp-frontend-devtool/images/before_start_01.png)
 
 4. 打开` Lua Debug` 面板.
 
@@ -47,11 +46,13 @@
 
 1. 确定你的客户端集成了 `Lua Socket`
 
-2. 在需要调试的lua代码中添加 `start()` (如需特意指定 `Host` 和` Port`, 可以通过 `start(Host, Port)`, 来启动, 其中` Host` 默认为` localhost`, `Port` 默认为`8172`) (客户端已经集成` mobdebug.lua`)
+2. 在需要调试的lua代码(一般添加在文件的开头)中添加 `start()` (如需特意指定 `Host` 和` Port`, 可以通过 `start(Host, Port)`, 来启动, 其中` Host` 默认为` localhost`, `Port` 默认为`8172`) (客户端已经集成` mobdebug.lua`)
 
+  ![Before Start](https://raw.githubusercontent.com/wiki/RYTong/emp-frontend-devtool/images/before_start_01.png)
+  
 3. 打开` Lua Debug` 面板.
 
-  ![First Step](https://raw.githubusercontent.com/wiki/RYTong/emp-frontend-devtool/images/tutorials_01.png)
+
 
 4. 启动调试服务.
 
