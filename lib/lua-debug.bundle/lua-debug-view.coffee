@@ -141,7 +141,7 @@ module.exports = class LuaDebugView extends View
 
   dispose:()->
     @aBPMap = {}
-    @modalPanel.destroy()
+    @modalPanel?.destroy()
     @disposable?.dispose()
 
   # hanle click callback
