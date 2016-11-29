@@ -43,6 +43,10 @@ atom-text-editor::shadow .gutter .line-number {
   }
 }
 
+.tab-bar div.title::before {
+  margin-top: 5px;
+}
+
 .efd-client-log-status-bar {
   cursor: pointer;
 }
@@ -56,6 +60,7 @@ atom-text-editor::shadow .gutter .line-number {
 .efd-log-view {
   .panel-heading {
     display: flex;
+    justify-content: space-between;
     padding: 0px @component-padding 0px @component-padding;
     .headleft {
       display: flex;
@@ -69,7 +74,6 @@ atom-text-editor::shadow .gutter .line-number {
     }
     .headright {
       display: flex;
-      flex-grow: 1;
       justify-content: flex-end;
     }
   }
@@ -77,7 +81,7 @@ atom-text-editor::shadow .gutter .line-number {
     top: 0px;
   }
   .panel-body {
-    height: 200px;
+    background-color: @inset-panel-background-color;
     overflow: scroll;
   }
 }
