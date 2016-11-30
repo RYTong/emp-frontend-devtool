@@ -20,9 +20,15 @@
       "versions": {
         "^1.0.0": "consumeStatusBar"
       }
+    },
+    "tool-bar": {
+      "versions": {
+        "^0 || ^1": "consumeToolBar"
+      }
     }
   },
   "package-deps": [
+    "tool-bar",
     "file-icons",
     "autocomplete-emp-lua",
     "highlight-selected",
