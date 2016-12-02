@@ -4,8 +4,6 @@
 // for a full listing of what's available.
 @import "ui-variables";
 
-.emp-frontend-devtool {
-}
 
 .lua-syntax-error-filename {
   color: @text-color-error;
@@ -43,131 +41,14 @@ atom-text-editor::shadow .gutter .line-number {
   }
 }
 
-.efd-devices {
-  padding: 10px;
-  background-color: @pane-item-background-color;
-  height: 100%;
-}
-
-.efd-devices-item:hover {
-  background-color: @tool-panel-background-color;
-}
-.efd-devices-item {
-  height: 200px;
-  width: 80px;
-  background-color: @pane-item-background-color;
-  border: 1px solid @pane-item-border-color;
-}
-
-.tool-bar-btn {
-  &.disabled {
-    color: @text-color-subtle !important;
-    &:hover {
-      color: @text-color-subtle !important;
-    }
-  }
-  &.action.ready {
-    color: #00CC00 !important;
-    &:hover {
-      color: #00FF00 !important;
-    }
-  }
-  &.action.running {
-    color: #CC0000 !important;
-    &:hover {
-      color: #FF0000 !important;
-    }
-  }
-  &.running-name {
-    color: #00CC00 !important;
-    &:hover {
-      color: #00CC00 !important;
-    }
-  }
-}
-
 .tab-bar div.title::before {
   margin-top: 5px;
-}
-
-.efd-client-log-status-bar {
-  cursor: pointer;
 }
 
 .efd-qrcode-panel {
   display: flex;
   flex-direction: column;
   align-items: center;
-}
-
-.efd-log-view {
-  .panel-heading {
-    display: flex;
-    justify-content: space-between;
-    padding: 0px @component-padding 0px @component-padding;
-    .headleft {
-      display: flex;
-      align-items: center;
-      label {
-        margin-right: @component-padding;
-      }
-      input {
-        margin-top: 0em;
-      }
-    }
-    .headright {
-      display: flex;
-      justify-content: flex-end;
-    }
-  }
-  .btn {
-    top: 0px;
-  }
-  .panel-body {
-    background-color: @inset-panel-background-color;
-    overflow: scroll;
-  }
-}
-
-.efd-config-status-bar span {
-  margin-right: 1px;
-}
-
-.efd-config-view {
-  display: flex;
-  flex-direction: column;
-  .panel-heading {
-    display: flex;
-    .onoff {
-      display: flex;
-      flex-grow: 1;
-      justify-content: flex-end;
-    }
-  }
-  .panel-body {
-    display: flex;
-    flex-flow: column;
-    .config-item {
-      display: flex;
-      flex-flow: row;
-      justify-content: flex-start;
-      align-items: center;
-      .config-item-key {
-        width: 70px;
-        display: flex;
-        justify-content: flex-end;
-      }
-      .config-item-value {
-        margin-left: 5px;
-        flex-grow: 1;
-      }
-    }
-  }
-  .actions {
-    display: flex;
-    justify-content: flex-end;
-    margin-top: 20px;
-  }
 }
 
 .efd-server-ready {

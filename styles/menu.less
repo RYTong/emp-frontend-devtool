@@ -1,0 +1,28 @@
+@import "ui-variables";
+
+.tool-bar-btn {
+  &.disabled {
+    color: @text-color-subtle !important;
+    &:hover {
+      color: @text-color-subtle !important;
+    }
+  }
+  &.action.ready {
+    color: #00CC00 !important;
+    &:hover {
+      color: #00FF00 !important;
+    }
+  }
+  &.action.running {
+    color: #CC0000 !important;
+    &:hover {
+      color: #FF0000 !important;
+    }
+  }
+  &.running-name {
+    color: #00CC00 !important;
+    &:hover {
+      color: #00CC00 !important;
+    }
+  }
+}
