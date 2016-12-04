@@ -13,6 +13,11 @@
       "versions": {
         "1.0.0": "onFileVisibleInTree"
       }
+    },
+    "linter": {
+      "versions": {
+        "1.0.0": "provideLinter"
+      }
     }
   },
   "consumedServices": {
@@ -30,6 +35,7 @@
   "package-deps": [
     "tool-bar",
     "file-icons",
+    "linter",
     "autocomplete-emp-lua",
     "highlight-selected",
     "language-lua"
