@@ -10,10 +10,11 @@
 
 .efd-device-item {
   &:hover {
-    color: @text-color-success;
+    color: @text-color-highlight;
   }
   display: flex;
   flex-direction: column;
+  color: @text-color;
   margin-right: 10px;
   border: 1px solid @pane-item-border-color;
   padding: 10px;
@@ -35,6 +36,14 @@
   padding-right: 35px;
   margin-top: 5px;
   margin-bottom: 10px;
+  i {
+    &.service-enable {
+      color: @text-color-success;
+    }
+    &.service-disable {
+      color: @text-color-error;
+    }
+  }
 }
 
 .device-item-content {
