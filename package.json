@@ -1,6 +1,6 @@
 {
   "name": "emp-frontend-devtool",
-  "main": "./lib/emp-frontend-devtool",
+  "main": "./lib/main",
   "version": "1.2.1",
   "description": "EMP Frontend Development Environment",
   "keywords": [],
