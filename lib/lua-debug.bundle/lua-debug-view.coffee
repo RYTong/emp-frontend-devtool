@@ -54,9 +54,9 @@ module.exports = class LuaDebugView extends View
             @div class: "server-con panel-body padded",  =>
               @div class: "control-btn-group btn-group" ,=>
                 @button class: 'btn icon icon-playback-play btn-else', title:"Run Until Next Breakpoint" ,click: 'send_run'
-                @button class: 'btn icon icon-move-down btn-else', title:"Step Over" ,click: 'send_over'
-                @button class: 'btn icon icon-steps btn-else', title:"Step Into" ,click: 'send_step'
-                @button class: 'btn icon icon-move-up btn-else', title:"Step Out" ,click: 'send_out'
+                @button class: 'btn mdi mdi-debug-step-over btn-else', title:"Step Over" ,click: 'send_over'
+                @button class: 'btn mdi mdi-debug-step-into btn-else', title:"Step Into" ,click: 'send_step'
+                @button class: 'btn mdi mdi-debug-step-over btn-else', title:"Step Out" ,click: 'send_out'
                 @button class: 'btn icon icon-arrow-down btn-else', title:"Run Done" ,click: 'send_done'
 
 
