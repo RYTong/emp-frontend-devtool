@@ -5,6 +5,20 @@
         "label": "Run as Lua Script",
         "command": "emp-frontend-devtool:run-lua"
       }
+    ],
+    ".efd-log-view .panel-body": [
+      {
+        "label": "复制所选文本",
+        "command": "emp-frontend-devtool:copy-selected-log"
+      },
+      {
+        "label": "清除当前日志",
+        "command": "emp-frontend-devtool:clear-active-log"
+      },
+      {
+        "label": "关闭日志面板",
+        "command": "emp-frontend-devtool:toggle-log"
+      }
     ]
   },
   "menu": [
