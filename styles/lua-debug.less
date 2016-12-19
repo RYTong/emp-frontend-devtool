@@ -24,11 +24,12 @@
   -webkit-flex: 1;
   -webkit-flex-direction: column;
   overflow: visible;
-  background:@emp-background-color;
+  // background:@app-background-color;
+
   // background: @base-background-color
 
   .lua-debug-panel{
-    background-color:@emp-background-color;
+    // background-color:@app-background-color;
     height: 91%;
     position: relative;
     cursor: col-resize;
@@ -42,7 +43,7 @@
     min-width: 0;
 
     .lua-debug-flow {
-      background-color:@emp-background-color;
+      // background-color:@app-background-color;
       position: absolute;
       top: 0;
       right : 0;
@@ -64,7 +65,7 @@
       }
 
       .server-con {
-        color:@emp-background-color;
+        color:@app-background-color;
 
         vertical-align: top;
         padding:@component-padding/4 @component-padding/4 @component-padding/2 @component-padding/4;
@@ -74,9 +75,9 @@
         width: 100%;
         .btn-default,
         .btn-group > .btn-default {
-          background: @emp-background-color;
+          background: @app-background-color;
           color:#000014;
-          border: 1px solid #ccc;
+          border: 1px solid @base-border-color;
 
           &:hover {
             color: #000014;
@@ -85,42 +86,51 @@
         }
 
         .btn-else {
-          border: 1px solid #ccc;
+          border: 1px solid @base-border-color;
           margin-bottom:@component-padding/4;
         }
 
         .setting-editor-container {
           margin-bottom: @component-padding;
-          background-color:#FAFFFF;
-          border: 1px solid #cccccc;
+          background-color:@app-background-color;
+          border: 1px solid @base-border-color;
           border-radius: 4px;
 
-          atom-text-editor[mini],
-          atom-text-editor[mini].is-focused::shadow {
-            // color: @text-color;
-            color: #333333;
-            background-color: #FAFFFF;
-            // padding: 6px 12px;
-
-            .cursor {
-              border-color: #000;
-            }
-
+          atom-text-editor[mini]{
+            opacity: .75;
             .selection .region {
-              background-color: rgba(0, 0, 0, .2)
+              background-color: contrast(@input-background-color, lighten(@input-background-color, 8%), darken(@input-background-color, 8%) );
+            }
+          }
+          atom-text-editor[mini].is-focused::shadow {
+            // // color: @text-color;
+            // color: #333333;
+            // background-color: #FAFFFF;
+            // // padding: 6px 12px;
+            opacity: 1;
+            .selection .region {
+            background-color: contrast(@input-background-color, lighten(@input-background-color, 12%), darken(@input-background-color, 12%) );
             }
 
-            .placeholder-text {
-              color: #888;
-            }
+            // .cursor {
+            //   border-color: @base-border-color;
+            // }
+            //
+            // .selection .region {
+            //   background-color: rgba(0, 0, 0, .2)
+            // }
+
+            // .placeholder-text {
+            //   color: @text-color;
+            // }
           }
         }
 
         .conf-heading {
           padding-top: @component-padding/2;
           padding-bottom: @component-padding/2;
-          border-bottom: 1px solid #858585;
-          color: #262626;
+          border-bottom: 1px solid @base-border-color;
+          color: @text-color; //@base-border-color
           font-size: 16px;
           // margin: 10px 0;
           -webkit-user-select: none;
@@ -130,7 +140,7 @@
         .state-div-content {
           margin: 5px 5px 5px 0;
           .btn-group.btn-else {
-            border: 1px solid #ccc;
+            border: 1px solid @base-border-color;
             margin-bottom:@component-padding/4;
           }
 
@@ -159,7 +169,7 @@
   height:@tab-height+10;
   // vertical-align:middle;
   padding: 2px 0px 2px 0px;
-  border-bottom: 4px solid #ccc;
+  border-bottom: 4px solid @base-border-color;
 
   .debug-btn-bar {
     height:auto;
@@ -188,8 +198,8 @@
   // position: absolute;
   overflow: auto;
   -webkit-flex-direction: column;
-  border: 1px solid #ccc;
-  background-color: #e7e7e7;
+  border: 1px solid @base-border-color;
+  background-color: @base-background-color;
   box-shadow: -1px 0px 1px -1px #aeaeae inset;
 
 }
@@ -197,7 +207,7 @@
 .control-tab {
   width:100%;
   max-height:350px;
-  background-color: #e7e7e7;
+  background-color: @base-background-color;
   box-shadow: -1px 0px 1px -1px #aeaeae inset;
   .btn-td {
     // align:"right";
