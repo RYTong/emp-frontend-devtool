@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<content>
+  <head>
+    <script src="--efd-files--/mobdebug.lua"></script>
+    <script type="text/x-lua">
+      <![CDATA[
+        timer:startTimer(0, 0, function()
+          local content = file:read("@HOME_PAGE@", "text")
+          if (content ~= nil) then
+            location:replace(content)
+          end
+        end, 0);
+      ]]>
+    </script>
+    <style>
+      .main {
+        background-color: #000000;
+      }
+      .info {
+        color: red;
+        top: 200px;
+        left: 5px;
+      }
+    </style>
+  </head>
+  <body class="main">
+    <label class="info">未找到首页文件：@HOME_PAGE@</label>
+  </body>
+</content>
