@@ -4,13 +4,13 @@ BPEleView = require './bp-ele-view'
 LuaDebugVarView = require './variable/lua-variable-view'
 emp = require './global/emp'
 oServer = require './net/server'
-
+socketEmitter = require '../socket-emitter'
+socketEmit = socketEmitter.getEmit('lua-debug')
+_ = require 'underscore-plus'
 
 module.exports = class LuaDebugView extends View
   modalPanel:null
   aBPMap:null
-  client_on: "#66FF33"
-  client_off: "#FF1919"
 
   @content: ->
     @div class: 'lua-debug-view tool-panel',=>
@@ -33,20 +33,20 @@ module.exports = class LuaDebugView extends View
 
           # # server state inline
           @div outlet: 'vServerStateView', class: 'lua-debug-server-row', =>
-          # # @div outlet: 'vServerStateView', class: 'lua-debug-server-row', style:"display:inline;", =>
-          #   @div class: "server-con panel-body padded", =>
-          #     @div class: "block conf-heading icon icon-gear", "Lua Debug Server"
+          # @div outlet: 'vServerStateView', class: 'lua-debug-server-row', style:"display:inline;", =>
+            @div class: "server-con panel-body padded", =>
+              @div class: "block conf-heading icon icon-gear", "Lua Debugger"
           #
-          #   @div class: "server-con panel-body padded",  =>
-          #     @div class: "state-div-content", =>
-          #       @label class: "debug-label", "Server State   : "
-          #       @label outlet:"vServerState", class: "debug-label-content", "--"
+            @div class: "server-con panel-body padded",  =>
+              @div outlet:'state_div',class: "state-div-content", =>
+                @label class: "debug-label", "Server State: "
+                @label outlet:'vClientState', class: "debug-label-content debug-label-off", "Off"
+              @div outlet:'select_div', class: "state-div-content", style:"display:none", =>
+                @select outlet: "client_info", class: "form-control"
           #     # @div class: 'controls', =>
           #     #   @div class: 'setting-editor-container', =>
           #     #     @subview 'vMsgEditor', new TextEditorView(mini: true, attributes: {id: 'msg', type: 'string'}, placeholderText: 'Send Msg')
-          #     @div class: "state-div-content", =>
-          #       @label class: "debug-label", "Client State: "
-          #       @label outlet:"vClientState", class: "debug-label-content", "--"
+
           #     @button class: 'btn btn-else btn-error inline-block-tight', click: 'stop_server', "Stop Server"
             #   @button class: 'btn btn-else btn-info inline-block-tight', click: 'send_msg', "Send"
             # @div class: "server-con panel-body padded",  =>
@@ -56,7 +56,7 @@ module.exports = class LuaDebugView extends View
                 @button outlet:'btn_run', class: 'btn icon icon-playback-play btn-else', disabled:"disabled", title:"Run Until Next Breakpoint" ,click: 'send_run'
                 @button outlet:'btn_over', class: 'btn mdi mdi-debug-step-over btn-else', title:"Step Over" , disabled:"disabled" ,click: 'send_over'
                 @button outlet:'btn_step', class: 'btn mdi mdi-debug-step-into btn-else',  disabled:"disabled",title:"Step Into" ,click: 'send_step'
-                @button outlet:'btn_out', class: 'btn mdi mdi-debug-step-over btn-else',  disabled:"disabled",title:"Step Out" ,click: 'send_out'
+                @button outlet:'btn_out', class: 'btn mdi mdi-debug-step-out btn-else',  disabled:"disabled",title:"Step Out" ,click: 'send_out'
                 @button outlet:'btn_done', class: 'btn icon icon-arrow-down btn-else',  disabled:"disabled",title:"Run Done" ,click: 'send_done'
 
 
@@ -102,7 +102,11 @@ module.exports = class LuaDebugView extends View
     @vLuaDebugFlow.append @luaDebugVarView
     @vLuaDebugFlow.append @luaDebugUPVarView
     @vLuaDebugFlow.append @luaDebugGloVarView
-
+    @sSelectClient = null
+    @client_info.change =>
+      @sSelectClient = @client_info.val()
+    # initial the handler
+    @handler()
     # @sServerHost = atom.config.get(emp.LUA_SERVER_HOST)
     # @sServerPort = atom.config.get(emp.LUA_SERVER_PORT)
     # @vHostTextEditor.setText @sServerHost
@@ -118,6 +122,22 @@ module.exports = class LuaDebugView extends View
     #   atom.config.set(emp.LUA_SERVER_PORT, sNewServerPort)
 
 
+  handler:() ->
+    socketEmit 'set-peer-resolve-handler', (peer, peers) =>
+      console.log "set-peer-resolve-handler:", peer, peers
+    socketEmit 'set-peer-connect-handler', (peer, peers) =>
+
+      console.log "set-peer-connect-handler:", peer, peers
+    socketEmit 'set-peer-disconnect-handler', (peer, peers) =>
+      console.log "set-peer-disconnect-handler:", peer, peers
+
+  new_option: (name, value=name)->
+    $$ ->
+      @option value: value, name
+
+  new_select_option: (name, value=name) ->
+    $$ ->
+      @option selected:'select', value: value, name
 
   toggle_show:() ->
     unless @modalPanel
@@ -179,6 +199,9 @@ module.exports = class LuaDebugView extends View
     @btn_step.disable()
     @btn_out.disable()
     @btn_done.disable()
+    @state_div.show()
+    @select_div.hide()
+    @show_client_state_off()
     # @vServerConfView.show()
     # @vServerStateView.hide()
 
@@ -189,19 +212,27 @@ module.exports = class LuaDebugView extends View
     @btn_step.enable()
     @btn_out.enable()
     @btn_done.enable()
+
+    # @select_div.show()
+    # @state_div.hide()
+
     # @vServerState["context"].innerHTML = "On"
 
     # @vServerConfView.hide()
     # @vServerStateView.show()
-    # @show_client_state_off()
+    @show_client_state_on()
 
   show_client_state_on:() =>
-    @vClientState["context"].innerHTML = "On"
-    @vClientState.css('color', @client_on)
-
+    @vClientState["context"].innerHTML = "Waitting"
+    @vClientState.removeClass('debug-label-off')
+    @vClientState.addClass('debug-label-waite')
+    # console.log @vClientState
+    # @vClientState.css('color', @client_off)
+  #
   show_client_state_off:() =>
     @vClientState["context"].innerHTML = "Off"
-    @vClientState.css('color', @client_off)
+    @vClientState.addClass('debug-label-off')
+    @vClientState.removeClass('debug-label-waite')
 
   refresh_variable:(fFileName, sVariable) =>
     # console.log "show variable:+++++++", fFileName, sVariable

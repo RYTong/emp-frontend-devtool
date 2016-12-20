@@ -13,6 +13,9 @@ MSG_START_FLAG = "#luaDebugStartflag#"
 su = require '../../server-util'
 store = require('../../store')
 log = require('../../log-prefix')('[lua-debug.server]')
+parseIP =  require '../../parse-ip'
+socketEmitter = require '../../socket-emitter'
+
 {startService, stopService} = require '../../actions'
 # unless emitter
 emitter = new Emitter()
@@ -20,12 +23,17 @@ emitter = new Emitter()
 _oServer = null
 _aSocketArr = {}
 # _bServerState = false
+emit = socketEmitter.getEmit('lua-debug')
+# emit = (event, args...) =>
+#   socketEmitter.emit(event, 'lua-debug', args...)
 
 initial = (oSocket) ->
-  log("initial")
-  iPort = oSocket.remotePort
-  sRemoteAddress = oSocket.remoteAddress
-  log("New Client connect:#{sRemoteAddress}:#{iPort}")
+  # sRemoteAddress = oSocket.remoteAddress
+  sKey = storeSocket(oSocket)
+  emit('peer-connect', sKey)
+  log("New Client connect:#{sKey}")
+  getAllBP(sKey)
+  oSocket.setEncoding('utf8')
   sBuffer = ''
   oSocket.on 'data', (sData)=>
     sData = String(sData)
@@ -63,8 +71,9 @@ initial = (oSocket) ->
         sBuffer=sBuffer+sData
 
   oSocket.on 'close', (data)=>
-    log("Client close:#{sRemoteAddress}")
-    delSocket(iPort)
+    log("Client close:#{sKey}")
+    emit('peer-disconnect', sKey)
+    delSocket(sKey)
     # emitClientOff(_.size(_aSocketArr))
     store.default.dispatch(stopService('lua-debug'))
 
@@ -96,6 +105,8 @@ process_msg = (sData) ->
             sLocalVar = oRe.args
             # log(sFileName, iLineNum) #, sLocalVar
             emitRTInfo(sFileName, iLineNum, sLocalVar)
+          when '200'
+            continue
           else
             log("else state:#{sState}", oRe)
       catch error
@@ -103,12 +114,16 @@ process_msg = (sData) ->
         console.error error
 
 storeSocket = (oSocket)=>
-  iRPort = oSocket.remotePort
-  _aSocketArr[iRPort] = oSocket
-  return iRPort
+  sNewIp = parseIP(oSocket.remoteAddress)
+  sKey = "#{sNewIp}##{oSocket.remotePort}"
+  # console.log sKey
+  oSocket.sKey = sKey
+  # iRPort = oSocket.remotePort
+  _aSocketArr[sKey] = oSocket
+  return sKey
 
-delSocket = (iPort)=>
-  delete _aSocketArr[iPort]
+delSocket = (sKey)=>
+  delete _aSocketArr[sKey]
 
 resetState = () ->
   # _bServerState = false
@@ -118,6 +133,9 @@ resetState = () ->
 # 发送 client 端的状态给 editor, 并使该 editor 被选中
 emitRTInfo = (sFileName, iLineNum, sLocalVar) =>
   emitter.emit 'get-runtime-info', {name:sFileName, line:iLineNum, variable:sLocalVar}
+
+getAllBP = (sKey) =>
+  emitter.emit 'get-all-bp',{msg:sKey}
 
 module.exports =
   start:() ->
@@ -140,15 +158,6 @@ module.exports =
         _oServer = null
         su.default.handleError("lua-debug","cant alloc port for lua-debug server")
       )
-
-    _oServer.on 'connection', (oSocket) =>
-      log("new client in +++++++ ")
-      iRPort = storeSocket(oSocket)
-      @getAllBP(iRPort)
-      # @emitClientOn(_.size(@aSocketArr))
-
-    _oServer.on 'listening', =>
-      console.info '\nSocket Server start as:' + _oServer.address().address + ":" +_oServer.address().port
 
     @started()
 
@@ -179,15 +188,15 @@ module.exports =
     oSocket.write(sMsg)
 
   addBPCB:(bp) ->
-    log("send :add")
+    # log("send :add")
     @send(bp.addCommand())
 
   delBPCB:(bp) ->
-    log("send :del")
+    # log("send :del")
     @send(bp.delCommand())
 
-  sendAllBPsCB:({msg:iRPort}, oBPMaps) ->
-    if oSocket = _aSocketArr[iRPort]
+  sendAllBPsCB:({msg:sKey}, oBPMaps) ->
+    if oSocket = _aSocketArr[sKey]
       for k, aBPList of oBPMaps
         for iL, oBP of aBPList
           @send_specify(oSocket, oBP.addCommand())
@@ -204,8 +213,8 @@ module.exports =
   onStopped:(callback) ->
     emitter.on 'stopped', callback
 
-  getAllBP:(iRPort) =>
-    emitter.emit 'get-all-bp',{msg:iRPort}
+  getAllBP:(sKey) =>
+    getAllBP(sKey)
 
   onGetAllBP:(callback) ->
     emitter.on 'get-all-bp', callback
