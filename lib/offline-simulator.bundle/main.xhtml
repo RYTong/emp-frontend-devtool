@@ -5,7 +5,13 @@
     <script type="text/x-lua">
       <![CDATA[
         timer:startTimer(0, 0, function()
-          local content = file:read("@HOME_PAGE@", "text")
+          --local content = file:read("@HOME_PAGE@", "text")
+          local content = http:postSyn(
+            {},
+            "test_s/get_page",
+            "name="..utility:escapeURI("@HOME_PAGE@")
+          );
+
           if (content ~= nil) then
             location:replace(content)
           end
