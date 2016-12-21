@@ -70,7 +70,7 @@ class BreakpointStore
     # @oBP.decoration.destroy()
 
   activeEditor:(sFileName, iLineNum) ->
-    console.log sFileName, iLineNum
+    # console.log sFileName, iLineNum
     oPoint = new Point(iLineNum-1, 0)
     sShortFileName = path.basename sFileName
     if !oEditor = @oEditors[sFileName]

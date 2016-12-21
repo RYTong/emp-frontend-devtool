@@ -18,6 +18,9 @@ module.exports =
   LUA_MSG_OVER:"OVER\n"
   LUA_MSG_OUT:"OUT\n"
   LUA_MSG_DONE:"DONE\n"
+  LUA_MSG_OFF:"OFF\n"
+  LUA_MSG_ON:"ON\n"
+  LUA_MSG_DELBALL: "DELB * 0\n"
 
   # VIEW NAME
   LOCAL_VAR_VIEW_NAME:"Variables"

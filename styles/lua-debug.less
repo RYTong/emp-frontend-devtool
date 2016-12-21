@@ -143,8 +143,13 @@
             border: 1px solid @base-border-color;
             margin-bottom:@component-padding/4;
           }
-
+          .form-control {
+            width: 100%;
+            // height: 100;
+            height: @tab-height;
+          }
         }
+
 
         .control-btn-group {
           // margin:@component-padding/2 0 0 0;
@@ -248,6 +253,15 @@
 .debug-label-content {
   color: @text-color-info;
   margin: 5px 5px 5px 5px;
+
+}
+
+.debug-label-off {
+  color:@text-color-error;
+}
+
+.debug-label-waite {
+  color:@text-color-info;
 }
 
 .db-remove {

@@ -140,6 +140,7 @@ local iscasepreserving = win or (mac and io.open('/library') ~= nil)
 if jit and jit.off then jit.off() end
 
 local socket = require "socket"
+local local_port
 local coro_debugger
 local coro_debugee
 local coroutines = {}; setmetatable(coroutines, {__mode = "k"}) -- "weak" keys
@@ -813,6 +814,7 @@ local function done()
   coro_debugger = nil -- to make sure isrunning() returns `false`
   seen_hook = nil -- to make sure that the next start() call works
   abort = nil -- to make sure that callback calls use proper "abort" value
+  local_port = nil -- reset the localport
 end
 -- jcdebugger_loop events.BREAK, vars, file, line
 local function debugger_loop(sev, svars, sfile, sline)
@@ -1381,8 +1383,12 @@ local lasthost, lastport
 -- Starts a debug session by connecting to a controller
 -- jcstart
 function start(controller_host, controller_port)
+  startLuaDebugger(controller_host, controller_port)
+end
+
+function startLuaDebugger (controller_host, controller_port)
   -- only one debugging session can be run (as there is only one debug hook)
-  if isrunning() then return end
+  if isrunning() then return local_port end
 
   lasthost = controller_host or lasthost
   lastport = controller_port or lastport
@@ -1391,16 +1397,14 @@ function start(controller_host, controller_port)
   controller_port = lastport or mobdebug.port
 
   local err
-  -- db_print.info("start server")
   server, err = mobdebug.connect(controller_host, controller_port)
-  -- db_print.info("over connect")
   if server then
     -- correct stack depth which already has some calls on it
     -- so it doesn't go into negative when those calls return
     -- as this breaks subsequence checks in stack_depth().
     -- start from 16th frame, which is sufficiently large for this check.
     stack_level = stack_depth(16)
-    print("stack level", stack_level)
+    -- print("stack level", stack_level)
     -- provide our own traceback function to report the error remotely
     do
       local dtraceback = debug.traceback
@@ -1428,12 +1432,35 @@ function start(controller_host, controller_port)
     debug.sethook(debug_hook, HOOKMASK)
     seen_hook = nil -- reset in case the last start() call was refused
     step_into = true -- start with step command
-    print("start: over")
-    return true
+
+    print("start successed!")
+    local_port = server:getlocalport()
+    return local_port
   else
     print(("Could not connect to %s:%s: %s")
     :format(controller_host, controller_port, err or "unknown error"))
   end
+end
+
+
+function stopLuaDebugger ()
+  -- body...
+  if not (isrunning() and server) then return end
+
+  if not jit then
+    for co, debugged in pairs(coroutines) do
+      if debugged then debug.sethook(co) end
+    end
+  end
+
+  debug.sethook()
+  server:close()
+
+  coro_debugger = nil -- to make sure isrunning() returns `false`
+  seen_hook = nil -- to make sure that the next start() call works
+  abort = nil -- to make sure that callback calls use proper "abort" value
+  local_port = nil -- reset the localport
+  return true
 end
 
 local function controller(controller_host, controller_port, scratchpad)
@@ -1973,27 +2000,6 @@ local function coro()
   end
 end
 
-local moconew
-local function moai()
-  if moconew then return end -- only set once
-  moconew = moconew or (MOAICoroutine and MOAICoroutine.new)
-  if not moconew then return end
-  MOAICoroutine.new = function(...)
-    local thread = moconew(...)
-    -- need to support both thread.run and getmetatable(thread).run, which
-    -- was used in earlier MOAI versions
-    local mt = thread.run and thread or getmetatable(thread)
-    local patched = mt.run
-    mt.run = function(self, f, ...)
-      return patched(self,  function(...)
-        mobdebug.on()
-        return f(...)
-      end, ...)
-    end
-    return thread
-  end
-end
-
 -- make public functions available
 mobdebug.setbreakpoint = set_breakpoint
 mobdebug.removebreakpoint = remove_breakpoint
@@ -2005,7 +2011,6 @@ mobdebug.connect = connect
 mobdebug.start = start
 mobdebug.on = on
 mobdebug.off = off
-mobdebug.moai = moai
 mobdebug.coro = coro
 mobdebug.done = done
 mobdebug.pause = function() step_into = true end
@@ -2014,17 +2019,5 @@ mobdebug.output = output
 mobdebug.onexit = os and os.exit or done
 mobdebug.basedir = function(b) if b then basedir = b end return basedir end
 
--- mobdebug.format_arg = format_arg
--- mobdebug.format_args = format_args
--- mobdebug.format_variables = format_variables
--- mobdebug.format_global = format_global
---
--- mobdebug.send_ok = send_ok
--- mobdebug.send_err = send_err
--- mobdebug.send_normal = send_normal
--- mobdebug.format_send = format_send
---
--- mobdebug.format_send = format_send
--- mobdebug.format_err_send = format_err_send
 
 return mobdebug
