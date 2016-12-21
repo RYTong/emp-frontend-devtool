@@ -5,12 +5,13 @@ LuaDebugVarView = require './variable/lua-variable-view'
 emp = require './global/emp'
 oServer = require './net/server'
 socketEmitter = require '../socket-emitter'
-socketEmit = socketEmitter.getEmit('lua-debug')
+socketEmit = socketEmitter.getEmit('lua-debugger')
 _ = require 'underscore-plus'
 
 module.exports = class LuaDebugView extends View
   modalPanel:null
   aBPMap:null
+  sDefaultClient:"None"
 
   @content: ->
     @div class: 'lua-debug-view tool-panel',=>
@@ -42,7 +43,8 @@ module.exports = class LuaDebugView extends View
                 @label class: "debug-label", "Server State: "
                 @label outlet:'vClientState', class: "debug-label-content debug-label-off", "Off"
               @div outlet:'select_div', class: "state-div-content", style:"display:none", =>
-                @select outlet: "client_info", class: "form-control"
+                @select outlet: "client_info", class: "form-control", =>
+                  @option outlet:'emp_default_client', value: "None","None"
           #     # @div class: 'controls', =>
           #     #   @div class: 'setting-editor-container', =>
           #     #     @subview 'vMsgEditor', new TextEditorView(mini: true, attributes: {id: 'msg', type: 'string'}, placeholderText: 'Send Msg')
@@ -58,7 +60,9 @@ module.exports = class LuaDebugView extends View
                 @button outlet:'btn_step', class: 'btn mdi mdi-debug-step-into btn-else',  disabled:"disabled",title:"Step Into" ,click: 'send_step'
                 @button outlet:'btn_out', class: 'btn mdi mdi-debug-step-out btn-else',  disabled:"disabled",title:"Step Out" ,click: 'send_out'
                 @button outlet:'btn_done', class: 'btn icon icon-arrow-down btn-else',  disabled:"disabled",title:"Run Done" ,click: 'send_done'
-
+                # @button outlet:'btn_step', class: 'btn mdi mdi-debug-step-into btn-else',  disabled:"disabled",title:"Step Into" ,click: 'te1'
+                # @button outlet:'btn_out', class: 'btn mdi mdi-debug-step-out btn-else',  disabled:"disabled",title:"Step Out" ,click: 'te2'
+                # @button outlet:'btn_done', class: 'btn icon icon-arrow-down btn-else',  disabled:"disabled",title:"Run Done" ,click: 'te3'
 
           # break points list
           @div outlet: 'vBPView', class: 'lua-debug-server-row', style:"display:inline;", =>
@@ -84,6 +88,7 @@ module.exports = class LuaDebugView extends View
 
   initialize:(serializeState, @codeEventEmitter) ->
     @aBPMap = {}
+    @vClientMap = {}
     @emitter = new Emitter
     # @oDebugServer = new DebugSocket()
     @disposable = new CompositeDisposable
@@ -105,6 +110,8 @@ module.exports = class LuaDebugView extends View
     @sSelectClient = null
     @client_info.change =>
       @sSelectClient = @client_info.val()
+      # console.log @sSelectClient
+      @setSelectClient(@sSelectClient)
     # initial the handler
     @handler()
     # @sServerHost = atom.config.get(emp.LUA_SERVER_HOST)
@@ -125,11 +132,69 @@ module.exports = class LuaDebugView extends View
   handler:() ->
     socketEmit 'set-peer-resolve-handler', (peer, peers) =>
       console.log "set-peer-resolve-handler:", peer, peers
+      @set_options(peer, peers)
     socketEmit 'set-peer-connect-handler', (peer, peers) =>
 
       console.log "set-peer-connect-handler:", peer, peers
+
+      if _.size(peers) is 1
+      #   # 如果为第一个 id 则设为默认的选中
+        @sSelectClient = peer
+        @add_option peer, true
+        @setSelectClient(peer)
+      else
+        @add_option peer
+
     socketEmit 'set-peer-disconnect-handler', (peer, peers) =>
       console.log "set-peer-disconnect-handler:", peer, peers
+      # console.log peer
+      # console.log @sSelectClient
+      if peer is @sSelectClient
+        @sSelectClient = @sDefaultClient
+        @emp_default_client.attr('selected', true)
+        @setSelectClient(@sDefaultClient, true)
+      @remove_option(peer, peers)
+
+
+  set_options: (peer, peers) ->
+    # @sSelectClient = @client_info.val()
+    # @client_info.empty()
+    vView = @vClientMap[peer]
+    vView.text(peers[peer])
+
+  add_option:(peer, bIsSel=false) ->
+    if bIsSel
+      vOption = @new_select_option(peer)
+    else
+      vOption = @new_option(peer)
+    @vClientMap[peer] = vOption
+    @client_info.append(vOption)
+    @select_div.show()
+    @state_div.hide()
+
+  remove_option:(peer, peers) ->
+    @vClientMap[peer]?.remove()
+    delete @vClientMap[peer]
+    if _.size(peers) is 0
+      @select_div.hide()
+      @state_div.show()
+
+  # te1:() ->
+  #   a={a:1}
+  #   @set_options("a", a)
+  #
+  # te2:() ->
+  #   a={a:1, b:2}
+  #   for k, v of a
+  #     @add_option(k)
+  #
+  # te3:() ->
+  #   a={a:1}
+  #   console.log @client_info
+  #   console.log @emp_default_client
+  #   @remove_option("a", {b:2})
+  #   # @client_info.select("b")
+  #   @emp_default_client.attr('selected', true)
 
   new_option: (name, value=name)->
     $$ ->
@@ -202,6 +267,7 @@ module.exports = class LuaDebugView extends View
     @state_div.show()
     @select_div.hide()
     @show_client_state_off()
+    @vClientMap={}
     # @vServerConfView.show()
     # @vServerStateView.hide()
 
@@ -265,6 +331,9 @@ module.exports = class LuaDebugView extends View
 
   stop_run:() =>
     @emitter.emit 'stop'
+
+  setSelectClient:(sKey, bIsDel=false) =>
+    @emitter.emit 'set-select-client', {msg:sKey, isDel:bIsDel}
 
 
 
@@ -332,3 +401,6 @@ module.exports = class LuaDebugView extends View
 
   onDelBPEvnent:(callback) ->
     @emitter.on 'del_bp', callback
+
+  onSetSelectClient:(callback) ->
+    @emitter.on 'set-select-client', callback

@@ -140,6 +140,7 @@ local iscasepreserving = win or (mac and io.open('/library') ~= nil)
 if jit and jit.off then jit.off() end
 
 local socket = require "socket"
+local local_port
 local coro_debugger
 local coro_debugee
 local coroutines = {}; setmetatable(coroutines, {__mode = "k"}) -- "weak" keys
@@ -813,6 +814,7 @@ local function done()
   coro_debugger = nil -- to make sure isrunning() returns `false`
   seen_hook = nil -- to make sure that the next start() call works
   abort = nil -- to make sure that callback calls use proper "abort" value
+  local_port = nil -- reset the localport
 end
 -- jcdebugger_loop events.BREAK, vars, file, line
 local function debugger_loop(sev, svars, sfile, sline)
@@ -1386,7 +1388,7 @@ end
 
 function startLuaDebugger (controller_host, controller_port)
   -- only one debugging session can be run (as there is only one debug hook)
-  if isrunning() then return end
+  if isrunning() then return local_port end
 
   lasthost = controller_host or lasthost
   lastport = controller_port or lastport
@@ -1430,9 +1432,10 @@ function startLuaDebugger (controller_host, controller_port)
     debug.sethook(debug_hook, HOOKMASK)
     seen_hook = nil -- reset in case the last start() call was refused
     step_into = true -- start with step command
-    print("start successed!")
 
-    return server:getlocalport()
+    print("start successed!")
+    local_port = server:getlocalport()
+    return local_port
   else
     print(("Could not connect to %s:%s: %s")
     :format(controller_host, controller_port, err or "unknown error"))
@@ -1456,6 +1459,7 @@ function stopLuaDebugger ()
   coro_debugger = nil -- to make sure isrunning() returns `false`
   seen_hook = nil -- to make sure that the next start() call works
   abort = nil -- to make sure that callback calls use proper "abort" value
+  local_port = nil -- reset the localport
   return true
 end
 

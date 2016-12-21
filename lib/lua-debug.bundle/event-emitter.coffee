@@ -63,6 +63,8 @@ class CodeEventEmitter
       server.delBPCB bp
       # @oDebugServer.send(emp.LUA_MSG_DONE)
 
+    @disposable.add @luaDebugView.onSetSelectClient (sKey)=>
+      server.setSelectClient sKey
 
     # @disposable.add @luaDebugView.onSendDone (e)=>
       # @oDebugServer.send(emp.LUA_MSG_DONE)
@@ -76,6 +78,8 @@ class CodeEventEmitter
     @disposable.add server.onRTInfo (e) =>
       @oBreakpointStore.activeEditor(e.name, e.line)
       @luaDebugView.refresh_variable(e.name, e.variable)
+    # @disposable.add server.onInitialRun (e) =>
+    #   server.sendRun(e, @oBreakpointStore.oBPMaps)
 
 
 
