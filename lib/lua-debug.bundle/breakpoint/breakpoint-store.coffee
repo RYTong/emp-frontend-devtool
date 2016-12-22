@@ -71,6 +71,7 @@ class BreakpointStore
 
   activeEditor:(sFileName, iLineNum) ->
     # console.log sFileName, iLineNum
+    atom.focus()
     oPoint = new Point(iLineNum-1, 0)
     sShortFileName = path.basename sFileName
     if !oEditor = @oEditors[sFileName]

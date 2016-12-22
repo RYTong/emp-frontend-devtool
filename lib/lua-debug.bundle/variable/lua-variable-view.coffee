@@ -20,20 +20,27 @@ module.exports = class LuaDebugVarView extends View
   initialize:(@sViewName) ->
     # console.log @locv_tree
     @iTestCon = 10
+    @bShowFlag = false
 
 
   show_var_view:() ->
     console.log "show_var_view"
+    @bShowFlag = true
 
     if @var_list_panel.isVisible()
-      @var_list_panel.hide()
-      @var_icon.addClass('icon-triangle-right')
-      @var_icon.removeClass('icon-triangle-down')
+      @collapse()
     else
-      @var_list_panel.show()
-      @var_icon.removeClass('icon-triangle-right')
-      @var_icon.addClass('icon-triangle-down')
+      @expand()
 
+  collapse:() ->
+    @var_list_panel.hide()
+    @var_icon.addClass('icon-triangle-right')
+    @var_icon.removeClass('icon-triangle-down')
+
+  expand:() ->
+    @var_list_panel.show()
+    @var_icon.removeClass('icon-triangle-right')
+    @var_icon.addClass('icon-triangle-down')
     # @test(@iTestCon)
 
   refresh_variable:(fFileName, oRe) ->
@@ -48,6 +55,15 @@ module.exports = class LuaDebugVarView extends View
     else
       @vVarEleView.refresh_variable(oRe)
 
+  # 选择 client 后清空变量
+  empty_variable:() ->
+    if @vVarEleView
+      @vVarEleView.destroy()
+      @vVarEleView = null
+    # console.log "-----:", @bShowFlag
+    # 如果被操作过, 则不自动展开
+    if !@bShowFlag
+      @expand()
 
   test:() ->
     @iTestCon = @iTestCon-1

@@ -112,6 +112,7 @@ module.exports = class LuaDebugView extends View
       @sSelectClient = @client_info.val()
       # console.log @sSelectClient
       @setSelectClient(@sSelectClient)
+      # @empty_variable()
     # initial the handler
     @handler()
     # @sServerHost = atom.config.get(emp.LUA_SERVER_HOST)
@@ -310,6 +311,11 @@ module.exports = class LuaDebugView extends View
     @luaDebugUPVarView.refresh_variable(fFileName, oRe.upVal)
     @luaDebugGloVarView.refresh_variable(fFileName, oRe.G)
 
+  empty_variable:() =>
+    @luaDebugVarView.empty_variable()
+    @luaDebugUPVarView.empty_variable()
+    @luaDebugGloVarView.empty_variable()
+
 
   addBPCB:(bp) ->
     # console.log bp
@@ -333,8 +339,9 @@ module.exports = class LuaDebugView extends View
     @emitter.emit 'stop'
 
   setSelectClient:(sKey, bIsDel=false) =>
+    # 选择 client 后清空变量
+    @empty_variable()
     @emitter.emit 'set-select-client', {msg:sKey, isDel:bIsDel}
-
 
 
   # send msg to socket
