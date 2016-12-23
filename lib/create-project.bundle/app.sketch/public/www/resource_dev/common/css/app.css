@@ -1,0 +1,64 @@
+.main {
+  color: #AAAAAA;
+  background-color: #242729;
+  padding-top: 50px;
+  padding-left: 10px;
+}
+
+.file {
+  color: #FF00FF;
+  margin-left: 5px;
+  width: 290px;
+}
+
+.files {
+  width: 300px;
+  background-color: #292C2F;
+  border: 1px solid #151618;
+}
+
+.file {
+  margin-bottom: 2px;
+}
+
+.info {
+  color: #00FFFF;
+  margin-top: 10px;
+  margin-bottom: 20px;
+}
+
+.red {
+  color: #FF0000;
+  background-color: #FF0000;
+  width: 100px;
+}
+
+.green {
+  color: #00FF00;
+  background-color: #00FF00;
+  width: 100px;
+}
+
+.blue {
+  color: #0000FF;
+  background-color: #0000FF;
+  width: 100px;
+}
+
+.yellow {
+  color: #FFFF00;
+  background-color: #FFFF00;
+  width: 100px;
+}
+
+.toggle-task {
+  margin-top: 20px;
+  margin-left: 200px;
+  border: 1px solid #00FF00;
+  padding: 1px;
+}
+
+.task-action-label {
+  width: 60px;
+  text-align: center;
+}
