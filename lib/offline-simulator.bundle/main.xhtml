@@ -2,8 +2,10 @@
 <content>
   <head>
     <script src="--efd-files--/mobdebug.lua"></script>
+    <script src="--efd-files--/efd-patch.lua"></script>
     <script type="text/x-lua">
       <![CDATA[
+        local text = "未找到首页文件：@HOME_PAGE@"
         timer:startTimer(0, 0, function()
           --local content = file:read("@HOME_PAGE@", "text")
           local content = http:postSyn(
@@ -14,22 +16,24 @@
 
           if (content ~= nil) then
             location:replace(content)
+          else
+            local main = document:getElementsByClassName("main")[1]
+            local info = document:getElementsByClassName("info")[1]
+            info:setPropertyByName("text", text)
+            main:setStyleByName("background-color", "#AA0000")
           end
         end, 0);
       ]]>
     </script>
     <style>
       .main {
-        background-color: #000000;
-      }
-      .info {
-        color: red;
-        top: 200px;
-        left: 5px;
+        color: #AAAAAA;
+        padding-top: 50px;
+        padding-left: 10px;
       }
     </style>
   </head>
   <body class="main">
-    <label class="info">未找到首页文件：@HOME_PAGE@</label>
+    <label class="info">loading main page...</label>
   </body>
 </content>

@@ -1,0 +1,5 @@
+{
+  "entry": "main.lua",
+  "build": "../efd-patch.lua",
+  "watch": false
+}
