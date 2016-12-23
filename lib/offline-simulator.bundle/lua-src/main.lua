@@ -20,3 +20,11 @@ if (type(_G._print) ~= 'function') then
   _G._print = _G.print
   _G.print = log
 end
+
+_G.openInTextEditor = function(path)
+  http:postSyn(
+    {["X-Method"]="open-file"},
+    "command",
+    "path="..utility:escapeURI(path)
+  );
+end
