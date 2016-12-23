@@ -5,7 +5,7 @@
     <script src="--efd-files--/efd-patch.lua"></script>
     <script type="text/x-lua">
       <![CDATA[
-        local text = "未找到首页文件：@HOME_PAGE@"
+        local text = "未能打开首页文件：@HOME_PAGE@"
         timer:startTimer(0, 0, function()
           --local content = file:read("@HOME_PAGE@", "text")
           local content = http:postSyn(
@@ -20,6 +20,7 @@
             local main = document:getElementsByClassName("main")[1]
             local info = document:getElementsByClassName("info")[1]
             info:setPropertyByName("text", text)
+            main:setStyleByName("color", "#AAAAAA")
             main:setStyleByName("background-color", "#AA0000")
           end
         end, 0);
@@ -27,7 +28,8 @@
     </script>
     <style>
       .main {
-        color: #AAAAAA;
+        color: #DDDDDD;
+        background-color: #DDDDDD;
         padding-top: 50px;
         padding-left: 10px;
       }
