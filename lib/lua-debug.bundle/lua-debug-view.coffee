@@ -1,6 +1,7 @@
 {CompositeDisposable, Emitter} = require 'atom'
 {$, $$, View,TextEditorView} = require 'atom-space-pen-views'
 BPEleView = require './bp-ele-view'
+StepDetailView = require './lua-debug-step-view'
 LuaDebugVarView = require './variable/lua-variable-view'
 emp = require './global/emp'
 oServer = require './net/server'
@@ -52,7 +53,7 @@ module.exports = class LuaDebugView extends View
           #     @button class: 'btn btn-else btn-error inline-block-tight', click: 'stop_server', "Stop Server"
             #   @button class: 'btn btn-else btn-info inline-block-tight', click: 'send_msg', "Send"
             # @div class: "server-con panel-body padded",  =>
-            #   @button class: 'btn btn-else btn-primary inline-block-tight ', click: 'run_code', "Run Code In Atom"
+            #   @button class: 'btn btn-else btn-primary inline-block-tight ', click: 'onStart', "Run Code In Atom"
             @div class: "server-con panel-body padded",  =>
               @div outlet:'tool_bar_div', class: "control-btn-group btn-group" , =>
                 @button outlet:'btn_run', class: 'btn icon icon-playback-play btn-else', disabled:"disabled", title:"Run Until Next Breakpoint" ,click: 'send_run'
@@ -64,8 +65,10 @@ module.exports = class LuaDebugView extends View
                 # @button outlet:'btn_out', class: 'btn mdi mdi-debug-step-out btn-else',  disabled:"disabled",title:"Step Out" ,click: 'te2'
                 # @button outlet:'btn_done', class: 'btn icon icon-arrow-down btn-else',  disabled:"disabled",title:"Run Done" ,click: 'te3'
 
+
           # break points list
           @div outlet: 'vBPView', class: 'lua-debug-server-row', style:"display:inline;", =>
+
             @div class: "server-con panel-body padded", =>
               @div class: "block conf-heading icon icon-gear", "BreakPoints"
 
@@ -93,7 +96,10 @@ module.exports = class LuaDebugView extends View
     # @oDebugServer = new DebugSocket()
     @disposable = new CompositeDisposable
     # @codeView = new CodeView()
-    @codeEventEmitter.doManaEmit(@)
+
+    @stepDetailView = new StepDetailView(@codeEventEmitter)
+    @codeEventEmitter.doManaEmit(@, @stepDetailView)
+    @vBPView.before(@stepDetailView)
     @luaDebugVarView = new LuaDebugVarView(emp.LOCAL_VAR_VIEW_NAME)
     @luaDebugUPVarView = new LuaDebugVarView(emp.UP_VAR_VIEW_NAME)
     @luaDebugGloVarView = new LuaDebugVarView(emp.GLOBAL_VAR_VIEW_NAME )
@@ -133,18 +139,22 @@ module.exports = class LuaDebugView extends View
   handler:() ->
     socketEmit 'set-peer-resolve-handler', (peer, peers) =>
       console.log "set-peer-resolve-handler:", peer, peers
-      @set_options(peer, peers)
+      @set_options(peer, peers[peer])
     socketEmit 'set-peer-connect-handler', (peer, peers) =>
 
       console.log "set-peer-connect-handler:", peer, peers
+      #
+      # if _.size(peers) is 1
+      # #   # 如果为第一个 id 则设为默认的选中
+      #   @sSelectClient = peer
+      #   @add_option peer, true
+      #   @setSelectClient(peer)
+      # else
+      @add_option peer
+      @select_div.show()
+      @state_div.hide()
 
-      if _.size(peers) is 1
-      #   # 如果为第一个 id 则设为默认的选中
-        @sSelectClient = peer
-        @add_option peer, true
-        @setSelectClient(peer)
-      else
-        @add_option peer
+      # if _.size(peers) is 1
 
     socketEmit 'set-peer-disconnect-handler', (peer, peers) =>
       console.log "set-peer-disconnect-handler:", peer, peers
@@ -155,47 +165,36 @@ module.exports = class LuaDebugView extends View
         @emp_default_client.attr('selected', true)
         @setSelectClient(@sDefaultClient, true)
       @remove_option(peer, peers)
+      if _.size(peers) is 0
+        @select_div.hide()
+        @state_div.show()
 
-
-  set_options: (peer, peers) ->
+  set_options: (peer, oDetail) ->
     # @sSelectClient = @client_info.val()
     # @client_info.empty()
     vView = @vClientMap[peer]
-    vView.text(peers[peer])
+    vView.text(oDetail?.deviceInfo)
 
   add_option:(peer, bIsSel=false) ->
+    console.log peer
     if bIsSel
       vOption = @new_select_option(peer)
     else
       vOption = @new_option(peer)
+
     @vClientMap[peer] = vOption
     @client_info.append(vOption)
-    @select_div.show()
-    @state_div.hide()
+
 
   remove_option:(peer, peers) ->
     @vClientMap[peer]?.remove()
     delete @vClientMap[peer]
-    if _.size(peers) is 0
-      @select_div.hide()
-      @state_div.show()
 
-  # te1:() ->
-  #   a={a:1}
-  #   @set_options("a", a)
-  #
-  # te2:() ->
-  #   a={a:1, b:2}
-  #   for k, v of a
-  #     @add_option(k)
-  #
-  # te3:() ->
-  #   a={a:1}
-  #   console.log @client_info
-  #   console.log @emp_default_client
-  #   @remove_option("a", {b:2})
-  #   # @client_info.select("b")
-  #   @emp_default_client.attr('selected', true)
+
+  resetClientMap:() ->
+    for sKey, vView of @vClientMap
+      vView.remove()
+    @vClientMap = {}
 
   new_option: (name, value=name)->
     $$ ->
@@ -231,12 +230,12 @@ module.exports = class LuaDebugView extends View
     @disposable?.dispose()
 
   # hanle click callback
-  start_server: (event, element) =>
-
-    sNewServerHost = @sServerHost unless sNewServerHost = @vHostTextEditor.getText().trim()
-    sNewServerPort = @sServerPort unless sNewServerPort = @vPortTextEditor.getText().trim()
-    console.log sNewServerHost,sNewServerPort
-    @emitter.emit 'start_server', {host:sNewServerHost, port:sNewServerPort}
+  # start_server: (event, element) =>
+  #
+  #   sNewServerHost = @sServerHost unless sNewServerHost = @vHostTextEditor.getText().trim()
+  #   sNewServerPort = @sServerPort unless sNewServerPort = @vPortTextEditor.getText().trim()
+  #   console.log sNewServerHost,sNewServerPort
+  #   @emitter.emit 'start_server', {host:sNewServerHost, port:sNewServerPort}
     #
     # @oDebugServer.start(sNewServerHost,sNewServerPort, @show_state_panel, @show_server_panel)
     # @show_state_panel()
@@ -247,12 +246,8 @@ module.exports = class LuaDebugView extends View
     if sMsg
       @emitter.emit 'send_msg', sMsg
 
-  onSendMsg:(callback)->
-    @emitter.on 'send_msg', callback
-
-
-  stop_server:(event, element) ->
-    @emitter.emit 'stop_server'
+  # stop_server:(event, element) ->
+  #   @emitter.emit 'stop_server'
 
     # @oDebugServer.close()
     # @show_server_panel()
@@ -260,25 +255,21 @@ module.exports = class LuaDebugView extends View
   # some callback
   hide_bar_panel:() =>
     # @tool_bar_div.disable()
-    @btn_run.disable()
-    @btn_over.disable()
-    @btn_step.disable()
-    @btn_out.disable()
-    @btn_done.disable()
+    @disable_control_together()
     @state_div.show()
     @select_div.hide()
     @show_client_state_off()
-    @vClientMap={}
+    @resetClientMap()
     # @vServerConfView.show()
     # @vServerStateView.hide()
 
   show_bar_panel:() =>
     # @tool_bar_div.enable()
-    @btn_run.enable()
-    @btn_over.enable()
-    @btn_step.enable()
-    @btn_out.enable()
-    @btn_done.enable()
+    # @btn_run.enable()
+    # @btn_over.enable()
+    # @btn_step.enable()
+    # @btn_out.enable()
+    # @btn_done.enable()
 
     # @select_div.show()
     # @state_div.hide()
@@ -301,7 +292,11 @@ module.exports = class LuaDebugView extends View
     @vClientState.addClass('debug-label-off')
     @vClientState.removeClass('debug-label-waite')
 
-  refresh_variable:(fFileName, sVariable) =>
+  # 客户端发送断点阻塞时, 联动
+  refresh_variable:(fFileName, sVariable, sLine) =>
+    # 启用调试按键
+    @en_btns()
+    @stepDetailView.refresh_state(fFileName, sLine)
     # console.log "show variable:+++++++", fFileName, sVariable
     if typeof(sVariable) is 'string'
       oRe = JSON.parse(sVariable)
@@ -311,11 +306,36 @@ module.exports = class LuaDebugView extends View
     @luaDebugUPVarView.refresh_variable(fFileName, oRe.upVal)
     @luaDebugGloVarView.refresh_variable(fFileName, oRe.G)
 
+  dis_btns:() ->
+    @btn_run.disable()
+    @btn_over.disable()
+    @btn_step.disable()
+    @btn_out.disable()
+    @btn_done.disable()
+
+  en_btns:() ->
+    @btn_run.enable()
+    @btn_over.enable()
+    @btn_step.enable()
+    @btn_out.enable()
+    @btn_done.enable()
+
   empty_variable:() =>
     @luaDebugVarView.empty_variable()
     @luaDebugUPVarView.empty_variable()
     @luaDebugGloVarView.empty_variable()
 
+  setSelectClient:(sKey, bIsDel=false) =>
+    @disable_control_together()
+    # 选择 client 后清空变量
+    @empty_variable()
+    @emitter.emit 'set-select-client', {msg:sKey, isDel:bIsDel}
+
+  #
+  disable_control_together:() ->
+    # 禁用调试按键
+    @dis_btns()
+    @stepDetailView.set_empty()
 
   addBPCB:(bp) ->
     # console.log bp
@@ -332,22 +352,17 @@ module.exports = class LuaDebugView extends View
   delBPEvnent:(bp) =>
     @emitter.emit 'del_bp', bp
 
-  run_code:() =>
-    @emitter.emit 'start'
-
-  stop_run:() =>
-    @emitter.emit 'stop'
-
-  setSelectClient:(sKey, bIsDel=false) =>
-    # 选择 client 后清空变量
-    @empty_variable()
-    @emitter.emit 'set-select-client', {msg:sKey, isDel:bIsDel}
-
+  # run_code:() =>
+  #   @emitter.emit 'start'
+  #
+  # stop_run:() =>
+  #   @emitter.emit 'stop'
 
   # send msg to socket
   # runs until next breakpoint
   send_run:() =>
     console.log "send run"
+    @disable_control_together()
     @emitter.emit 'send_run'
 
   # runs until next line, stepping over function calls
@@ -365,8 +380,12 @@ module.exports = class LuaDebugView extends View
     # @oDebugServer.send(emp.LUA_MSG_OVER)
 
   send_done:() =>
+    @disable_control_together()
     @emitter.emit 'send_done'
     # @oDebugServer.send(emp.LUA_MSG_DONE)
+
+  onSendMsg:(callback)->
+    @emitter.on 'send_msg', callback
 
 
   onSendRun:(callback)->
@@ -394,17 +413,17 @@ module.exports = class LuaDebugView extends View
   # onDidNotRun: (callback) ->
   #   @oCodeRunner.onDidNotRun callback
 
-  onStartServer:(callback) ->
-    @emitter.on 'start_server', callback
+  # onStartServer:(callback) ->
+  #   @emitter.on 'start_server', callback
+  #
+  # onStopServer:(callback) ->
+  #   @emitter.on 'stop_server', callback
 
-  onStopServer:(callback) ->
-    @emitter.on 'stop_server', callback
-
-  onStart: (callback) ->
-    @emitter.on 'start', callback
-
-  onStop: (callback) ->
-    @emitter.on 'stop', callback
+  # onStart: (callback) ->
+  #   @emitter.on 'start', callback
+  #
+  # onStop: (callback) ->
+  #   @emitter.on 'stop', callback
 
   onDelBPEvnent:(callback) ->
     @emitter.on 'del_bp', callback

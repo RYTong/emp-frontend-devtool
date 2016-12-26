@@ -1,7 +1,7 @@
 @import "syntax-variables";
 @red-color: @syntax-color-removed;
 @green-color: @syntax-color-added;
-@blue-color: @syntax-color-renamed;
+@blue-color: @background-color-info;
 
 atom-text-editor::shadow .gutter .line-number {
   &.line-number-green {
@@ -26,7 +26,7 @@ atom-text-editor::shadow .gutter .line-number {
   }
 
   &.line-blue {
-    background-color: @blue-color;
+    background-color: @background-color-info !important;
   }
 
   &.line-red {
