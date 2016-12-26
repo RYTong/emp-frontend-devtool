@@ -77,18 +77,16 @@ initial = (oSocket) ->
     emit('peer-disconnect', sKey)
     delSocket(sKey)
     # emitClientOff(_.size(_aSocketArr))
-    store.default.dispatch(stopService('lua-debugger'))
 
   oSocket.setTimeout DEFAULT_TIMEOUT, =>
     log("Client connect timeout")
     oSocket.end()
 
+  # 判断 如果为第一个链接的设备, 并且 断点数 > 0, 则不立刻运行 (会在回调中加入断点, 并发送 run)
+  # 否则发送 run, 不阻塞
+  # unless (_.size(_aSocketArr) is 1) and (_.size(_oBPMaps) > 0)
   initialRun(oSocket)
 
-
-
-  # 判断是否有断点设置, 如果有,则阻塞, 没有就run
-  # 判断是否有 client 选中, 如果有则阻塞, 没有则 run
 
 do_preprocess = (sData) ->
   newDataArr = sData.split MSG_END_FLAG
@@ -173,6 +171,10 @@ module.exports =
         su.default.handleError("lua-debugger","cant alloc port for lua-debug server")
       )
 
+    _oServer.on 'close',  =>
+      store.default.dispatch(stopService('lua-debugger'))
+      resetState()
+
     @started()
 
   stop:() ->
@@ -180,7 +182,7 @@ module.exports =
     try
       if _oServer
         _oServer.close()
-        resetState()
+        # resetState()
         console.info "close socket sever over"
       else
         console.info "close socket sever over"
@@ -188,6 +190,7 @@ module.exports =
       @stopped()
     catch exc
       # console.log su
+      # console.log exc
       su.default.handleError("lua-debugger", exc)
       resetState()
       @stopped()
@@ -234,7 +237,6 @@ module.exports =
   setSelectClient:({msg:sKey, isDel:bIsDel}) ->
     # console.log _sSelectID, _aSocketArr, sKey
     if !bIsDel
-
     # else
       if _sSelectID
         oPreSocket = _aSocketArr[_sSelectID]

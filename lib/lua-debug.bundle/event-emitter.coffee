@@ -22,7 +22,8 @@ class CodeEventEmitter
     #   @codeView.setOver e
 
 
-  doManaEmit:(@luaDebugView) ->
+
+  doManaEmit:(@luaDebugView, @stepDetailView) ->
     # @disposable.add @luaDebugView.onStart (e)=>
       # @codeView.show e
       # @codeView.toggle()
@@ -32,15 +33,20 @@ class CodeEventEmitter
     #   @codeView.toggle()
 
     #socket server
-    @disposable.add @luaDebugView.onStartServer (e)=>
-      server.start e.host, e.port
+    # @disposable.add @luaDebugView.onStartServer (e)=>
+    #   server.start e.host, e.port
+    #
+    # @disposable.add @luaDebugView.onStopServer (e)=>
+    #   server.stop()
 
-    @disposable.add @luaDebugView.onStopServer (e)=>
-      server.stop()
+
+    @disposable.add @stepDetailView.onActiveEditor (e)=>
+      @oBreakpointStore.activeEditor(e.name, e.line)
 
 
     @disposable.add @luaDebugView.onSendRun (e)=>
       server.send(emp.LUA_MSG_RUN)
+      @oBreakpointStore.remove_decoration()
 
     @disposable.add @luaDebugView.onSendStep (e)=>
       server.send(emp.LUA_MSG_STEP)
@@ -50,6 +56,7 @@ class CodeEventEmitter
 
     @disposable.add @luaDebugView.onSendDone (e)=>
       server.send(emp.LUA_MSG_DONE)
+      @oBreakpointStore.remove_decoration()
 
     @disposable.add @luaDebugView.onSendOut (e)=>
       server.send(emp.LUA_MSG_OUT)
@@ -65,6 +72,7 @@ class CodeEventEmitter
 
     @disposable.add @luaDebugView.onSetSelectClient (sKey)=>
       server.setSelectClient sKey
+      @oBreakpointStore.remove_decoration()
 
     # @disposable.add @luaDebugView.onSendDone (e)=>
       # @oDebugServer.send(emp.LUA_MSG_DONE)
@@ -73,11 +81,12 @@ class CodeEventEmitter
       @luaDebugView.show_bar_panel()
     @disposable.add server.onStopped (e)=>
       @luaDebugView.hide_bar_panel()
+      @oBreakpointStore.remove_decoration()
     @disposable.add server.onGetAllBP (e)=>
       server.sendAllBPsCB(e, @oBreakpointStore.oBPMaps)
     @disposable.add server.onRTInfo (e) =>
       @oBreakpointStore.activeEditor(e.name, e.line)
-      @luaDebugView.refresh_variable(e.name, e.variable)
+      @luaDebugView.refresh_variable(e.name, e.variable, e.line)
     # @disposable.add server.onInitialRun (e) =>
     #   server.sendRun(e, @oBreakpointStore.oBPMaps)
 
@@ -92,6 +101,9 @@ class CodeEventEmitter
     @disposable.add @oBreakpointStore.onDelBP (bp)=>
       @luaDebugView.delBPCB bp
       server.delBPCB bp
+
+  # doStepViewEmit:(@stepDetailView) ->
+
 
   destroy: ->
     @dispose()

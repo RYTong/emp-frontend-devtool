@@ -34,6 +34,7 @@ class BreakpointStore
       d = oEditor.decorateMarker(marker, type: "line-number", class: "line-number-blue")
       d.setProperties(type: "line-number", class: "line-number-blue")
       oBP.decoration = d
+      # oBP.decorationLine = dL
       @addBPEmit(oBP)
     else
       # oEditor = atom.workspace.getActiveTextEditor()
@@ -70,7 +71,7 @@ class BreakpointStore
     # @oBP.decoration.destroy()
 
   activeEditor:(sFileName, iLineNum) ->
-    # console.log sFileName, iLineNum
+    console.log sFileName, iLineNum
     atom.focus()
     oPoint = new Point(iLineNum-1, 0)
     sShortFileName = path.basename sFileName
@@ -83,6 +84,20 @@ class BreakpointStore
       atom.workspace.open(oEditor.getPath(), { changeFocus:true }).then (oNewEditor) =>
         # console.log "after editor open", oNewEditor
         oNewEditor?.setCursorBufferPosition(oPoint)
+
+        unless !tmpD=oNewEditor.emp_decoration
+          # console.log oNewEditor.emp_decoration
+          # tmpD = oNewEditor.emp_decoration
+          tmpMarker = tmpD.getMarker()
+          tmpMarker.destroy() #if tmpMarker.getBufferRange().start.row == oBP.iLine-1
+
+        marker = oNewEditor.markBufferPosition([oPoint.row, 0])
+        # console.log marker
+        dL = oNewEditor.decorateMarker(marker, type: "line", class: "line-blue")
+        # console.log dL
+        dL.setProperties(type: "line", class: "line-blue")
+        oNewEditor.emp_decoration = dL
+
         @oEditors[sShortFileName] = oNewEditor
 
         if oBPSubList = @oBPMaps[sShortFileName]
@@ -93,6 +108,7 @@ class BreakpointStore
               for iK, oV of oBPSubList
                 oV.decoration = @add_bp(oNewEditor, iK)
     else
+      # console.log "has no editor ----"
       aEditorList = atom.workspace.getTextEditors()
       aFilterRe = _.filter aEditorList, (oTmpEditor) =>
         sTmpName = oTmpEditor.getTitle()
@@ -105,6 +121,25 @@ class BreakpointStore
         atom.workspace.open(oTmpEditor.getPath(), { changeFocus:true }).then (oNewEditor) =>
           # console.log "after editor open", oNewEditor
           oNewEditor?.setCursorBufferPosition(oPoint)
+
+          unless !tmpD=oTmpEditor.emp_decoration
+            # console.log oNewEditor.emp_decoration
+            # tmpD = oTmpEditor.emp_decoration
+            tmpMarker = tmpD.getMarker()
+            tmpMarker.destroy() #if tmpMarker.getBufferRange().start.row == oBP.iLine-1
+
+          unless !tmpD =oNewEditor.emp_decoration
+            # console.log oNewEditor.emp_decoration
+            tmpMarker = tmpD.getMarker()
+            tmpMarker.destroy() #if tmpMarker.getBufferRange().start.row == oBP.iLine-1
+
+          marker = oNewEditor.markBufferPosition([oPoint.row, 0])
+          # console.log marker
+          dL = oNewEditor.decorateMarker(marker, type: "line", class: "line-blue")
+          # console.log dL
+          dL.setProperties(type: "line", class: "line-blue")
+          oNewEditor.emp_decoration = dL
+
           @oEditors[sShortFileName] = oNewEditor
       else
         console.log "no editor find"
@@ -132,6 +167,12 @@ class BreakpointStore
     #   iLineNum = parseInt(iLineNum)
     #   options = {initialLine: iLineNum-1, initialColumn:0}
     #   atom.workspace.open(sFileName, options) #if fs.existsSync(fileName)
+
+  remove_decoration:() ->
+    for name, oEditor of @oEditors
+      unless !tmpD=oEditor.emp_decoration
+        tmpMarker = tmpD.getMarker()
+        tmpMarker.destroy()
 
   addBPEmit:(bp) ->
     # console.log "add bp emit"
