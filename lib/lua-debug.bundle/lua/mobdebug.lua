@@ -27,7 +27,7 @@ local mobdebug = {
   _COPYRIGHT = "Paul Kulchenko",
   _DESCRIPTION = "Mobile Remote Debugger for the Lua programming language",
   port = os and os.getenv and tonumber((os.getenv("MOBDEBUG_PORT"))) or 8172,
-  checkcount = 200,
+  checkcount = 10,  -- the rate of lua server check if there is a command income 
   yieldtimeout = 0.02, -- yield timeout (s)
   connecttimeout = 2, -- connect timeout (s)
 }

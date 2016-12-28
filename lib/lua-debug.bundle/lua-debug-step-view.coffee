@@ -18,7 +18,7 @@ class StepDetailView extends View
           @table class:'control-tab', outlet:'stop_at', =>
             @tr =>
               @td =>
-                @span outlet: 'detail_info', class: 'text-success',  click:'linked'
+                @span outlet: 'detail_info', class: 'text-success icon-pointer',  click:'linked'
               @td class:'btn-td ', align:"right", =>
                 @div class:'db-remove inline-block icon status-added icon-diff-renamed', click:'linked'
 
