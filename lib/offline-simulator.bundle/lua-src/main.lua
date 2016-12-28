@@ -18,8 +18,9 @@ end
 
 if (type(_G._print) ~= 'function') then
   _G._print = _G.print
-  _G.print = log
 end
+
+_G.print = log
 
 _G.openInTextEditor = function(path)
   http:postSyn(
