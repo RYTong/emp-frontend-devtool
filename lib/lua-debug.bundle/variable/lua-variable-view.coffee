@@ -65,35 +65,38 @@ module.exports = class LuaDebugVarView extends View
     if !@bShowFlag
       @expand()
 
-  test:() ->
-    @iTestCon = @iTestCon-1
-    if @iTestCon is 9
-      a='{"a":1123}'
-      oRe = JSON.parse(a)
-      console.log oRe
-      @vVarEleView = new VarEleView(oRe)
-      @locv_tree.append @vVarEleView
-    else if @iTestCon is 8
-      a='{ "b":2}'
-      oRe = JSON.parse(a)
-      console.log oRe
-      @vVarEleView.refresh_variable(oRe)
-    else if @iTestCon is 7
-      a='{"b":3, "c":10000, "a": {"e":2,"f":1}}'
-      oRe = JSON.parse(a)
-      console.log oRe
-      @vVarEleView.refresh_variable(oRe)
-    else if @iTestCon is 6
-      a='{"b":2, "c":10000, "a": {"e":3,"f":1}}'
-      oRe = JSON.parse(a)
-      console.log oRe
-      @vVarEleView.refresh_variable(oRe)
-    else if @iTestCon is 5
-      a='{"a": {"e":2,"d":5}, "b":4, "c":10000}'
-      oRe = JSON.parse(a)
-      console.log oRe
-      @vVarEleView.refresh_variable(oRe)
-      @iTestCon = 10
+  # test:() ->
+  #   @iTestCon = @iTestCon-1
+  #   if @iTestCon is 9
+  #     a='{"a":1123}'
+  #     oRe = JSON.parse(a)
+  #     console.log oRe
+  #     if !@vVarEleView
+  #       @vVarEleView = new VarEleView(oRe)
+  #       @locv_tree.append @vVarEleView
+  #     else
+  #       @vVarEleView.refresh_variable(oRe)
+  #   else if @iTestCon is 8
+  #     a='{ "a":1, "b":2}'
+  #     oRe = JSON.parse(a)
+  #     console.log oRe
+  #     @vVarEleView.refresh_variable(oRe)
+  #   else if @iTestCon is 7
+  #     a='{"b":3, "c":10000, "a": {"e":2,"f":1}}'
+  #     oRe = JSON.parse(a)
+  #     console.log oRe
+  #     @vVarEleView.refresh_variable(oRe)
+  #   else if @iTestCon is 6
+  #     a='{"b":2, "c":10000, "a": {"e":3,"f":1}}'
+  #     oRe = JSON.parse(a)
+  #     console.log oRe
+  #     @vVarEleView.refresh_variable(oRe)
+  #   else if @iTestCon is 5
+  #     a='{"a":2, "b":4, "c":{"F":2223333}}'
+  #     oRe = JSON.parse(a)
+  #     console.log oRe
+  #     @vVarEleView.refresh_variable(oRe)
+  #     @iTestCon = 10
     # a='{"a":1123,"c":10000,"b":2,"d": {"e":2,"f":1, "s":{"u":1, "p":3}},"ff":"<function >"}'
     # oRe = JSON.parse(a)
     # console.log oRe

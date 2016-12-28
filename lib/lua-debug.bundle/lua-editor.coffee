@@ -29,6 +29,7 @@ class LuaEditor
 
     gutterView = atom.views.getView(tmpGutter)
     gutterView.addEventListener 'click', (ev)=> @onGutterClick(tmpEditor, ev)
+    @resumeEditor(tmpEditor)
 
   onGutterClick:(editor, ev) =>
     # console.log "onGutterClick callback"
@@ -42,8 +43,14 @@ class LuaEditor
 
   addBreakpoint:(sName, sFile, sLine, oEditor) =>
     # console.log 'addBreakpoint'
-    oBP = new Breakpoint(sName, sFile, sLine)
+    oBP = new Breakpoint(sName, sFile, sLine, oEditor)
     @oBreakpointStore.addBreakpoint(oBP, oEditor)
+
+  resumeEditor:(oEditor)=>
+    # console.log "do resume"
+    @oBreakpointStore.resumeEditor(oEditor)
+
+
 
   dispose: ->
     @disposable.dispose()

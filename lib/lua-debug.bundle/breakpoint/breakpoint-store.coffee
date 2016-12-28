@@ -85,7 +85,7 @@ class BreakpointStore
         # console.log "after editor open", oNewEditor
         oNewEditor?.setCursorBufferPosition(oPoint)
 
-        unless !tmpD=oNewEditor.emp_decoration
+        unless !tmpD=oNewEditor.decorationLine
           # console.log oNewEditor.emp_decoration
           # tmpD = oNewEditor.emp_decoration
           tmpMarker = tmpD.getMarker()
@@ -96,17 +96,17 @@ class BreakpointStore
         dL = oNewEditor.decorateMarker(marker, type: "line", class: "line-blue")
         # console.log dL
         dL.setProperties(type: "line", class: "line-blue")
-        oNewEditor.emp_decoration = dL
+        oNewEditor.decorationLine = dL
 
         @oEditors[sShortFileName] = oNewEditor
 
-        if oBPSubList = @oBPMaps[sShortFileName]
-          # console.log "refresh bp ===========", oBPSubList
-          if _.size(oBPSubList) > 0
-            ds = oEditor.getLineNumberDecorations(type: "line-number", class: "line-number-blue")
-            unless ds.length > 0
-              for iK, oV of oBPSubList
-                oV.decoration = @add_bp(oNewEditor, iK)
+        # if oBPSubList = @oBPMaps[sShortFileName]
+        #   console.log "refresh bp ===========", oBPSubList
+        #   if _.size(oBPSubList) > 0
+        #     ds = oEditor.getLineNumberDecorations(type: "line-number", class: "line-number-blue")
+        #     unless ds.length > 0
+        #       for iK, oV of oBPSubList
+        #         oV.decoration = @add_bp(oNewEditor, iK)
     else
       # console.log "has no editor ----"
       aEditorList = atom.workspace.getTextEditors()
@@ -122,14 +122,14 @@ class BreakpointStore
           # console.log "after editor open", oNewEditor
           oNewEditor?.setCursorBufferPosition(oPoint)
 
-          unless !tmpD=oTmpEditor.emp_decoration
-            # console.log oNewEditor.emp_decoration
-            # tmpD = oTmpEditor.emp_decoration
+          unless !tmpD=oTmpEditor.decorationLine
+            # console.log oNewEditor.decorationLine
+            # tmpD = oTmpEditor.decorationLine
             tmpMarker = tmpD.getMarker()
             tmpMarker.destroy() #if tmpMarker.getBufferRange().start.row == oBP.iLine-1
 
-          unless !tmpD =oNewEditor.emp_decoration
-            # console.log oNewEditor.emp_decoration
+          unless !tmpD =oNewEditor.decorationLine
+            # console.log oNewEditor.decorationLine
             tmpMarker = tmpD.getMarker()
             tmpMarker.destroy() #if tmpMarker.getBufferRange().start.row == oBP.iLine-1
 
@@ -138,7 +138,7 @@ class BreakpointStore
           dL = oNewEditor.decorateMarker(marker, type: "line", class: "line-blue")
           # console.log dL
           dL.setProperties(type: "line", class: "line-blue")
-          oNewEditor.emp_decoration = dL
+          oNewEditor.decorationLine = dL
 
           @oEditors[sShortFileName] = oNewEditor
       else
@@ -155,6 +155,35 @@ class BreakpointStore
 
     # console.log oNewEditor
 
+  resumeEditor:(oEditor) ->
+    sBaseName = oEditor.getTitle()
+    sBaseDir = oEditor.getPath()
+    # console.log sBaseName
+    sDirNameOne = path.dirname sBaseDir
+    # console.log sDirNameOne
+    sBaseDirOne = path.basename(sDirNameOne).toLowerCase()
+    sDirNameTwo = path.dirname sDirNameOne
+    sBaseDirTwo = path.basename(sDirNameTwo).toLowerCase()
+    # console.log sBaseDirOne, sBaseDirTwo
+    if (sBaseDirOne is "lua") and (sBaseDirTwo isnt "common")
+      sBaseName = path.join sBaseDirTwo, sBaseDirOne, sBaseName
+    # console.log "resume name is :", sBaseName
+    # console.log "bp is ", @oBPMaps
+    if oBPSubList = @oBPMaps[sBaseName]
+      # console.log "refresh bp ===========", oBPSubList
+      if _.size(oBPSubList) > 0
+        ds = oEditor.getLineNumberDecorations(type: "line-number", class: "line-number-blue")
+        unless ds.length > 0
+          for iL, oBP of oBPSubList
+            console.log oBP, iL
+            oBP.decoration = @add_bp(oEditor, iL)
+    
+    # if dL = oEditor.decorationLine
+    #   dL.setProperties(type: "line", class: "line-blue")
+    #   oPoint = new Point(iL, 0)
+    #   oEditor?.setCursorBufferPosition(oPoint)
+
+
   add_bp:(oEditor, iLine) ->
 
     marker = oEditor.markBufferPosition([iLine-1, 0])
@@ -170,7 +199,7 @@ class BreakpointStore
 
   remove_decoration:() ->
     for name, oEditor of @oEditors
-      unless !tmpD=oEditor.emp_decoration
+      unless !tmpD=oEditor.decorationLine
         tmpMarker = tmpD.getMarker()
         tmpMarker.destroy()
 

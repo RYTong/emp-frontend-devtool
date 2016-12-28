@@ -61,7 +61,7 @@ module.exports = class LuaDebugView extends View
                 @button outlet:'btn_step', class: 'btn mdi mdi-debug-step-into btn-else',  disabled:"disabled",title:"Step Into" ,click: 'send_step'
                 @button outlet:'btn_out', class: 'btn mdi mdi-debug-step-out btn-else',  disabled:"disabled",title:"Step Out" ,click: 'send_out'
                 @button outlet:'btn_done', class: 'btn icon icon-arrow-down btn-else',  disabled:"disabled",title:"Run Done" ,click: 'send_done'
-                # @button outlet:'btn_step', class: 'btn mdi mdi-debug-step-into btn-else',  disabled:"disabled",title:"Step Into" ,click: 'te1'
+                # @button outlet:'btn_test', class: 'btn mdi mdi-debug-step-into btn-else',  disabled:"disabled",title:"Step Into" ,click: 'te1'
                 # @button outlet:'btn_out', class: 'btn mdi mdi-debug-step-out btn-else',  disabled:"disabled",title:"Step Out" ,click: 'te2'
                 # @button outlet:'btn_done', class: 'btn icon icon-arrow-down btn-else',  disabled:"disabled",title:"Run Done" ,click: 'te3'
 
