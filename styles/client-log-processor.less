@@ -6,7 +6,7 @@
     .panel-heading {
       display: flex;
       justify-content: space-between;
-      padding: 0px @component-padding 0px @component-padding;
+      padding: 2px @component-padding 2px @component-padding;
       .headleft {
         display: flex;
         align-items: center;
@@ -19,7 +19,14 @@
       }
       .headright {
         display: flex;
+        align-items: center;
         justify-content: flex-end;
+        & i {
+          margin-left: 2px;
+          &:hover {
+            color: @text-color-highlight;
+          }
+        }
       }
     }
     .btn {
