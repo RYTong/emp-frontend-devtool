@@ -3,7 +3,7 @@ module.exports =
 class Breakpoint
   decoration: null
   decorationLine:null
-  constructor:(@sName, @sFile, @iLine) ->
+  constructor:(@sName, @sFile, @iLine, @oEditor) ->
     @sBaseName = @sName
     sDirNameOne = path.dirname @sFile
     sBaseDirOne = path.basename(sDirNameOne).toLowerCase()
