@@ -14,7 +14,7 @@ class BPEleView extends View
         # @button class:'btn btn-error',click:'do_remove',"Remove"
 
 
-  initialize: (@callback, @oBreakpoint) ->
+  initialize: (@callback, @oBreakpoint, @stepDetailView) ->
 
 
   destroy: ->
@@ -29,6 +29,12 @@ class BPEleView extends View
     oEditor = @oBreakpoint.oEditor
     # console.log oEditor
     oPoint = new Point(@oBreakpoint.iLine-1, 0)
+    oStepPoint = new Point(@stepDetailView.sLine-1, 0)
+
     atom.workspace.open(oEditor.getPath(), { changeFocus:true }).then (oNewEditor) =>
-      # console.log "after editor open", oNewEditor
       oNewEditor?.setCursorBufferPosition(oPoint)
+      unless oNewEditor.decorationLine
+        marker = oNewEditor.markBufferPosition([oStepPoint.row, 0])
+        dL = oNewEditor.decorateMarker(marker, type: "line", class: "line-blue")
+        dL.setProperties(type: "line", class: "line-blue")
+        oNewEditor.decorationLine = dL

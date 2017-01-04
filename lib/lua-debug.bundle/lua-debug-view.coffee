@@ -339,7 +339,7 @@ module.exports = class LuaDebugView extends View
 
   addBPCB:(bp) ->
     # console.log bp
-    vBPEleView = new BPEleView(@delBPEvnent, bp)
+    vBPEleView = new BPEleView(@delBPEvnent, bp, @stepDetailView)
     @aBPMap[bp.sID] = vBPEleView
     @bp_tree.append vBPEleView
 
