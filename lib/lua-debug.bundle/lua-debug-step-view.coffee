@@ -38,6 +38,8 @@ class StepDetailView extends View
   set_empty:() ->
     @.hide()
     @detail_info.text('')
+    @sFile=null
+    @sLine=null
 
 
   linked: ->
