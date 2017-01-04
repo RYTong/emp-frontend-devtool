@@ -43,7 +43,7 @@ class LuaEditor
 
   addBreakpoint:(sName, sFile, sLine, oEditor) =>
     # console.log 'addBreakpoint'
-    oBP = new Breakpoint(sName, sFile, sLine, oEditor)
+    oBP = new Breakpoint(sName, sFile, sLine)
     @oBreakpointStore.addBreakpoint(oBP, oEditor)
 
   resumeEditor:(oEditor)=>

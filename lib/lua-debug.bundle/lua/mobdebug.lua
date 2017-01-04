@@ -1413,12 +1413,13 @@ function startLuaDebugger (controller_host, controller_port)
           local err, lvl = ...
           if err and type(err) ~= 'thread' then
             local trace = dtraceback(err, (lvl or 2)+1)
-            if genv.print == iobase.print then -- no remote redirect
             return trace
-            else
-              genv.print(trace) -- report the error remotely
-              return -- don't report locally to avoid double reporting
-            end
+            -- if genv.print == iobase.print then -- no remote redirect
+            -- return trace
+            -- else
+            --   genv.print(trace) -- report the error remotely
+            --   return -- don't report locally to avoid double reporting
+            -- end
           end
         end
         -- direct call to debug.traceback: return the original.
