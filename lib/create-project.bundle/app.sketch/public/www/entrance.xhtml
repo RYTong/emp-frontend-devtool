@@ -7,17 +7,19 @@
   <body class="main">
     <label>This page is rendered with:</label>
     <div class="files">
-      <label class="file"
-        onclick="openInTextEditor('entrance.xhtml')"
-      >entrance.xhtml</label>
-      <label class="file"
-        onclick="openInTextEditor('app.css')"
-      >common/css/app.css</label>
-      <label class="file"
-        onclick="openInTextEditor('app.lua')"
-      >common/lua/app.lua</label>
+      <div onclick="openInTextEditor('entrance.xhtml')" border="0">
+        <label class="file">entrance.xhtml</label>
+      </div>
+      <div onclick="openInTextEditor('app.css')" border="0">
+        <label class="file">common/css/app.css</label>
+      </div>
+      <div onclick="openInTextEditor('app.lua')" border="0">
+        <label class="file">common/lua/app.lua</label>
+      </div>
     </div>
-    <label class="info" onclick="tip()">Click to open and feel free to edit these files, and you'll get the changes in running device or simulator instantly. </label>
+    <div onclick="tip()" border="0">
+      <label class="info">Click to open and feel free to edit these files, and you'll get the changes in running device or simulator instantly. </label>
+    </div>
     <div class="test" border="0">
       <div class="red" border="0"><label>red</label></div>
     </div>
