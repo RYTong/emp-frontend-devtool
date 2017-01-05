@@ -35,6 +35,6 @@ class BPEleView extends View
       oNewEditor?.setCursorBufferPosition(oPoint)
       unless oNewEditor.decorationLine
         marker = oNewEditor.markBufferPosition([oStepPoint.row, 0])
-        dL = oNewEditor.decorateMarker(marker, type: "line", class: "line-blue")
-        dL.setProperties(type: "line", class: "line-blue")
+        dL = oNewEditor.decorateMarker(marker, type: "line", class: "line-step")
+        dL.setProperties(type: "line", class: "line-step")
         oNewEditor.decorationLine = dL

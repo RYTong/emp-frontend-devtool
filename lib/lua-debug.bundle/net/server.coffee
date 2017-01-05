@@ -38,39 +38,41 @@ initial = (oSocket) ->
   oSocket.setEncoding('utf8')
   sBuffer = ''
   oSocket.on 'data', (sData)=>
-    sData = String(sData)
-    tailFlag = 0  #字符串结尾再减一
-    tailChar = sData.substr -1, 1 # 取得data最后一个字符
-    if tailChar == '\0'
-      tailFlag = 1
-    if sData.indexOf(MSG_START_FLAG) == 0
-      if (sData.lastIndexOf(MSG_END_FLAG) == sData.length - MSG_END_FLAG.length - tailFlag)
-        do_preprocess(sData)
-        sBuffer=''
+    # console.log "has income -----"
+    unless _sSelectID isnt sKey
+      sData = String(sData)
+      tailFlag = 0  #字符串结尾再减一
+      tailChar = sData.substr -1, 1 # 取得data最后一个字符
+      if tailChar == '\0'
+        tailFlag = 1
+      if sData.indexOf(MSG_START_FLAG) == 0
+        if (sData.lastIndexOf(MSG_END_FLAG) == sData.length - MSG_END_FLAG.length - tailFlag)
+          do_preprocess(sData)
+          sBuffer=''
+        else
+          sBuffer=sBuffer+sData
       else
-        sBuffer=sBuffer+sData
-    else
-      if sData.indexOf(MSG_END_FLAG) > -1
-        aSplitRe = sData.split MSG_END_FLAG
-        iSpliteReLen = aSplitRe.length
-        switch iSpliteReLen
-          when 1
-            sBuffer+=sData
-            process_msg(sBuffer)
-            sBuffer=''
-          when 2
-            sBuffer+=aSplitRe[0]
-            process_msg(sBuffer)
-            sBuffer=aSplitRe[1]
-          else
-            sBuffer+=aSplitRe.shift()
-            process_msg(sBuffer)
-            sBuffer=aSplitRe.pop()
-            _.each aSplitRe, (sTmpMsg) =>
-              process_msg(sTmpMsg)
-            sBuffer
-      else
-        sBuffer=sBuffer+sData
+        if sData.indexOf(MSG_END_FLAG) > -1
+          aSplitRe = sData.split MSG_END_FLAG
+          iSpliteReLen = aSplitRe.length
+          switch iSpliteReLen
+            when 1
+              sBuffer+=sData
+              process_msg(sBuffer)
+              sBuffer=''
+            when 2
+              sBuffer+=aSplitRe[0]
+              process_msg(sBuffer)
+              sBuffer=aSplitRe[1]
+            else
+              sBuffer+=aSplitRe.shift()
+              process_msg(sBuffer)
+              sBuffer=aSplitRe.pop()
+              _.each aSplitRe, (sTmpMsg) =>
+                process_msg(sTmpMsg)
+              sBuffer
+        else
+          sBuffer=sBuffer+sData
 
   oSocket.on 'close', (data)=>
     log("Client close:#{sKey}")
@@ -112,6 +114,11 @@ process_msg = (sData) ->
             sLocalVar = oRe.args
             # log(sFileName, iLineNum) #, sLocalVar
             emitRTInfo(sFileName, iLineNum, sLocalVar)
+          when '206'
+            # console.log "global income ----------------------------------"
+            # console.log oRe
+            emitGlVar(oRe.args)
+            # console.log "global income ----------------------------------"
           when '200'
             continue
           else
@@ -141,6 +148,10 @@ resetState = () ->
 # 发送 client 端的状态给 editor, 并使该 editor 被选中
 emitRTInfo = (sFileName, iLineNum, sLocalVar) =>
   emitter.emit 'get-runtime-info', {name:sFileName, line:iLineNum, variable:sLocalVar}
+
+emitGlVar = (sVars) =>
+  emitter.emit 'get-global-var', {variable:sVars}
+
 
 getAllBP = (sKey) =>
   emitter.emit 'get-all-bp',{msg:sKey}
@@ -182,11 +193,11 @@ module.exports =
     try
       if _oServer
         _oServer.close()
-        # resetState()
         console.info "close socket sever over"
       else
         console.info "close socket sever over"
       # @fFCallback() unless !@fFCallback
+      resetState()
       @stopped()
     catch exc
       # console.log su
@@ -270,13 +281,18 @@ module.exports =
     emitter.on 'get-all-bp', callback
 
 
-
   # 发送 client 端的状态给 editor, 并使该 editor 被选中
-  emitRTInfo:()=>
-    emitRTInfo()
+  emitRTInfo:(sFileName, iLineNum, sLocalVar)=>
+    emitRTInfo(sFileName, iLineNum, sLocalVar)
 
   onRTInfo:(callback) ->
     emitter.on 'get-runtime-info', callback
+
+  emitGlVar:(sVars) =>
+    emitGlVar(sVars)
+
+  onGlVar:(callback) ->
+    emitter.on 'get-global-var', callback
 
   # 修改页面显示状态
   emitClientOn:(iSize) =>

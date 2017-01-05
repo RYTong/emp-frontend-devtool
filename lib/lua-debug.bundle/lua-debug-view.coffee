@@ -172,8 +172,11 @@ module.exports = class LuaDebugView extends View
   set_options: (peer, oDetail) ->
     # @sSelectClient = @client_info.val()
     # @client_info.empty()
+    # console.log peer, oDetail
     vView = @vClientMap[peer]
-    vView.text(oDetail?.deviceInfo)
+
+    sNewName = oDetail?.token + " (#{oDetail?.deviceInfo})"
+    vView.text(sNewName)
 
   add_option:(peer, bIsSel=false) ->
     console.log peer
@@ -305,6 +308,13 @@ module.exports = class LuaDebugView extends View
     @luaDebugVarView.refresh_variable(fFileName, oRe.locVal)
     @luaDebugUPVarView.refresh_variable(fFileName, oRe.upVal)
     @luaDebugGloVarView.refresh_variable(fFileName, oRe.G)
+
+  refresh_gl_variable:(sVariable) ->
+    if typeof(sVariable) is 'string'
+      oRe = JSON.parse(sVariable)
+    else
+      oRe = sVariable
+    @luaDebugGloVarView.refresh_variable(null, oRe)
 
   dis_btns:() ->
     @btn_run.disable()

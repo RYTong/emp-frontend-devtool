@@ -27,7 +27,7 @@ local mobdebug = {
   _COPYRIGHT = "Paul Kulchenko",
   _DESCRIPTION = "Mobile Remote Debugger for the Lua programming language",
   port = os and os.getenv and tonumber((os.getenv("MOBDEBUG_PORT"))) or 8172,
-  checkcount = 10,  -- the rate of lua server check if there is a command income 
+  checkcount = 10,  -- the rate of lua server check if there is a command income
   yieldtimeout = 0.02, -- yield timeout (s)
   connecttimeout = 2, -- connect timeout (s)
 }
@@ -75,6 +75,7 @@ local cororesume = ngx and coroutine._resume or coroutine.resume
 local coroyield = ngx and coroutine._yield or coroutine.yield
 local corostatus = ngx and coroutine._status or coroutine.status
 local corowrap = coroutine.wrap
+local globalSyncTimer = nil
 local filter_list = {basic=true, _G=true, _VERSION=true,
   assert=true, collectgarbage=true, dofile=true,
   error=true, getfenv=true, getmetatable=true,
@@ -1433,7 +1434,7 @@ function startLuaDebugger (controller_host, controller_port)
     debug.sethook(debug_hook, HOOKMASK)
     seen_hook = nil -- reset in case the last start() call was refused
     step_into = true -- start with step command
-
+    globalSyncTimer = timer:startTimer(3,1,timerRun, 5)
     print("start successed!")
     local_port = server:getlocalport()
     return local_port
@@ -1443,17 +1444,34 @@ function startLuaDebugger (controller_host, controller_port)
   end
 end
 
+function timerRun()
+  local tmpG = _G;
+  local tReTab = {};
+  for k, v in pairs(tmpG) do
+    if (not filter_list[k]) then
+      tReTab[k] = v
+    end;
+  end;
+
+  local re = do_format_args(tReTab);
+
+  local sSendMsg = format_send("206", nil, nil, re)
+  if server then
+    server:send(sSendMsg)
+  end
+end
 
 function stopLuaDebugger ()
   -- body...
+  timer:stopTimer(globalSyncTimer);
+  globalSyncTimer = nil;
+  print("stop Lua debugger --------- ")
   if not (isrunning() and server) then return end
-
   if not jit then
     for co, debugged in pairs(coroutines) do
       if debugged then debug.sethook(co) end
     end
   end
-
   debug.sethook()
   server:close()
 
@@ -1461,6 +1479,7 @@ function stopLuaDebugger ()
   seen_hook = nil -- to make sure that the next start() call works
   abort = nil -- to make sure that callback calls use proper "abort" value
   local_port = nil -- reset the localport
+    print("stop Lua debugger successed--------- ")
   return true
 end
 
