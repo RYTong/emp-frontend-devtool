@@ -93,9 +93,9 @@ class BreakpointStore
 
         marker = oNewEditor.markBufferPosition([oPoint.row, 0])
         # console.log marker
-        dL = oNewEditor.decorateMarker(marker, type: "line", class: "line-blue")
+        dL = oNewEditor.decorateMarker(marker, type: "line", class: "line-step")
         # console.log dL
-        dL.setProperties(type: "line", class: "line-blue")
+        dL.setProperties(type: "line", class: "line-step")
         oNewEditor.decorationLine = dL
 
         @oEditors[sShortFileName] = oNewEditor
@@ -135,9 +135,9 @@ class BreakpointStore
 
           marker = oNewEditor.markBufferPosition([oPoint.row, 0])
           # console.log marker
-          dL = oNewEditor.decorateMarker(marker, type: "line", class: "line-blue")
+          dL = oNewEditor.decorateMarker(marker, type: "line", class: "line-step")
           # console.log dL
-          dL.setProperties(type: "line", class: "line-blue")
+          dL.setProperties(type: "line", class: "line-step")
           oNewEditor.decorationLine = dL
 
           @oEditors[sShortFileName] = oNewEditor
@@ -177,9 +177,9 @@ class BreakpointStore
           for iL, oBP of oBPSubList
             console.log oBP, iL
             oBP.decoration = @add_bp(oEditor, iL)
-    
+
     # if dL = oEditor.decorationLine
-    #   dL.setProperties(type: "line", class: "line-blue")
+    #   dL.setProperties(type: "line", class: "line-step")
     #   oPoint = new Point(iL, 0)
     #   oEditor?.setCursorBufferPosition(oPoint)
 

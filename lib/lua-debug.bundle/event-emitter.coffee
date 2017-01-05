@@ -87,8 +87,9 @@ class CodeEventEmitter
     @disposable.add server.onRTInfo (e) =>
       @oBreakpointStore.activeEditor(e.name, e.line)
       @luaDebugView.refresh_variable(e.name, e.variable, e.line)
-    # @disposable.add server.onInitialRun (e) =>
-    #   server.sendRun(e, @oBreakpointStore.oBPMaps)
+    @disposable.add server.onGlVar (e) =>
+      # server.sendRun(e, @oBreakpointStore.oBPMaps)
+      @luaDebugView.refresh_gl_variable(e.variable)
 
 
 
