@@ -11,6 +11,9 @@
   "scripts": {
     "test": "standard"
   },
+  "standard": {
+    "globals": [ "atom" ]
+  },
   "providedServices": {
     "atom.file-icons": {
       "versions": {
