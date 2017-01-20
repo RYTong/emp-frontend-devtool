@@ -1,5 +1,6 @@
 {$,$$, View} = require 'atom-space-pen-views'
 VarEleLiView = require './variable-ele-li-view'
+_ = require 'underscore-plus'
 
 
 module.exports =
@@ -48,7 +49,10 @@ class VarEleView extends View
         delete @oStoreView[sOKey]
 
     # console.log oNewReList
-    for sKey, sVal of oNewReList
+    aKeys = _.keys(oNewReList).sort()
+    for sKey in aKeys
+      sVal = oNewReList[sKey]
+      # for sKey, sVal of oNewReList
       # console.log sKey, sVal
       if oViewObj = @oStoreView[sKey]
           oViewObj.view.refresh_variable(sKey, sVal)

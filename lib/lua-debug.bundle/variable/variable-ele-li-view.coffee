@@ -1,5 +1,6 @@
 {$, $$, $$$, View} = require 'atom-space-pen-views'
 # VarEleUlView = require './variable-ele-ul-view'
+_ = require 'underscore-plus'
 
 module.exports =
 class VarEleLiView extends View
@@ -71,7 +72,10 @@ class VarEleLiView extends View
             sOVal.view.destroy()
             delete @oStoreView[sOKey]
 
-        for sNewSubK, sNewSubV of sNVal
+        aKeys = _.keys(sNVal).sort()
+        for sNewSubK in aKeys
+          # for sNewSubK, sNewSubV of sNVal
+          sNewSubV = sNVal[sNewSubK]
           if oViewObj = @oStoreView[sNewSubK]
             oViewObj.view.refresh_variable(sNewSubK, sNewSubV)
 
@@ -83,7 +87,10 @@ class VarEleLiView extends View
         @oStoreView = {}
         @li_view.addClass('icon-triangle-right')
         @vSpanVal.text('Table')
-        for sNewSubK, sNewSubV of sNVal
+        aKeys = _.keys(sNVal).sort()
+        for sNewSubK in aKeys
+          # for sNewSubK, sNewSubV of sNVal
+          sNewSubV = sNVal[sNewSubK]
           vEleUlView = new VarEleLiView(sNewSubK, sNewSubV)
           @oStoreView[sNewSubK] = @new_store_obj(sNewSubV, vEleUlView)
           @ul_list.append vEleUlView
