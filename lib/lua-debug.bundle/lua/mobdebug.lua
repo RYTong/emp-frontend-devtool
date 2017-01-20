@@ -1246,7 +1246,7 @@ function format_arg (arg, iLoopCount)
   local tType = type(arg)
   local sRe = ""
   if (tType == "string") then
-    sRe = string.gsub(arg, "\n", " ")
+    sRe = string.gsub(arg, "[\t\n]", " ")
     sRe = string.format('%q', sRe)
   elseif tType == "number" then
     if arg ~= arg then
