@@ -1434,6 +1434,7 @@ function startLuaDebugger (controller_host, controller_port)
     debug.sethook(debug_hook, HOOKMASK)
     seen_hook = nil -- reset in case the last start() call was refused
     step_into = true -- start with step command
+    --@doc timer:startTimer(interval, repeats, run, delay)
     globalSyncTimer = timer:startTimer(3,1,timerRun, 5)
     print("start successed!")
     local_port = server:getlocalport()
