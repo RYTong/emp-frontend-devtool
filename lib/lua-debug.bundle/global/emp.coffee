@@ -3,7 +3,7 @@ fs = require 'fs'
 path = require 'path'
 os = require 'os'
 remote = require 'remote'
-dialog = remote.require 'dialog'
+dialog = remote.Dialog
 
 module.exports =
   LUA_GRAMMAR:'source.lua'
