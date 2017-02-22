@@ -35,16 +35,31 @@ class LuaEditor
     # console.log "onGutterClick callback"
     editorView = atom.views.getView editor
     {row:sLine} = editorView.component.screenPositionForMouseEvent(ev)
-    sNLine = editor.bufferRowForScreenRow(sLine)+1
+    sELine = editor.bufferRowForScreenRow(sLine)
+    sNLine = sELine+1
+    sContent = editor.lineTextForBufferRow(sELine)
+    sContent = sContent?.trim()
+    # console.log "click line is:", sContent
     sName = editor.getTitle()
     sFile = editor.getPath()
 
-    @addBreakpoint(sName, sFile, sNLine, editor)
+    if sContent.length > 0
+      if sContent.match /^--/i
+        @deleteBreakpoint(sName, sFile, sNLine, editor)
+      else
+        @addBreakpoint(sName, sFile, sNLine, editor)
+    else
+      # console.log "not process----"
+      @deleteBreakpoint(sName, sFile, sNLine, editor)
 
   addBreakpoint:(sName, sFile, sLine, oEditor) =>
     # console.log 'addBreakpoint'
     oBP = new Breakpoint(sName, sFile, sLine, oEditor)
     @oBreakpointStore.addBreakpoint(oBP, oEditor)
+
+  deleteBreakpoint:(sName, sFile, sLine, oEditor) =>
+    oBP = new Breakpoint(sName, sFile, sLine, oEditor)
+    @oBreakpointStore.deleteBreakpoint(oBP)
 
   resumeEditor:(oEditor)=>
     # console.log "do resume"

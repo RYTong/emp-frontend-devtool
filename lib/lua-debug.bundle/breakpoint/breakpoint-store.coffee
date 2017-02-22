@@ -20,7 +20,7 @@ class BreakpointStore
     # editor = atom.workspace.getActiveTextEditor()
 
     if @oBPMaps[oBP.sName]?[oBP.iLine]
-      @refresh_flag(oEditor, -1)
+      # @refresh_flag(oEditor, -1)
       @deleteDP(oBP)
       addDecoration = false
     else
@@ -28,7 +28,7 @@ class BreakpointStore
       @storeBP(oBP, oEditor)
 
 
-    console.log "addDecorations:", addDecoration
+    # console.log "addDecorations:", addDecoration
     if addDecoration
       marker = oEditor.markBufferPosition([oBP.iLine-1, 0])
       d = oEditor.decorateMarker(marker, type: "line-number", class: "line-number-blue")
@@ -44,23 +44,29 @@ class BreakpointStore
         marker.destroy() if marker.getBufferRange().start.row == oBP.iLine-1
       @delBPEmit(oBP)
 
+  deleteBreakpoint:(oBP) ->
+    if oOldBP = @oBPMaps[oBP.sName]?[oBP.iLine]
+      @delBPCB(oOldBP)
+      @delBPEmit(oOldBP)
+
+
   storeBP:(oBP, oEditor) ->
     # console.log "store bp:", oBP
     if !@oBPMaps[oBP.sName]
       @oBPMaps[oBP.sName] = {}
     @oBPMaps[oBP.sName][oBP.iLine] = oBP
     # TODO: 文件定位问题, 需要定向保存全路径
-    @refresh_flag(oEditor, 1)
+    # @refresh_flag(oEditor, 1)
     @oEditors[oBP.sName] = oEditor
 
   deleteDP:(oBP) ->
     delete @oBPMaps[oBP.sName][oBP.iLine]
 
-  refresh_flag:(oEditor, iAddInt) ->
-    if iFlag = oEditor[LUA_BP_FLAG]
-      oEditor[LUA_BP_FLAG] = iFlag+iAddInt
-    else
-      oEditor[LUA_BP_FLAG] = 1
+  # refresh_flag:(oEditor, iAddInt) ->
+  #   if iFlag = oEditor[LUA_BP_FLAG]
+  #     oEditor[LUA_BP_FLAG] = iFlag+iAddInt
+  #   else
+  #     oEditor[LUA_BP_FLAG] = 1
 
 
   delBPCB:(oBP) ->
@@ -70,7 +76,7 @@ class BreakpointStore
     # @oBP.decoration.destroy()
 
   activeEditor:(sFileName, iLineNum) ->
-    console.log sFileName, iLineNum
+    # console.log sFileName, iLineNum
     atom.focus()
     oPoint = new Point(iLineNum-1, 0)
     sShortFileName = path.basename sFileName
@@ -185,7 +191,7 @@ class BreakpointStore
         ds = oEditor.getLineNumberDecorations(type: "line-number", class: "line-number-blue")
         unless ds.length > 0
           for iL, oBP of oBPSubList
-            console.log oBP, iL
+            # console.log oBP, iL
             oBP.decoration = @add_bp(oEditor, iL)
 
     # if dL = oEditor.decorationLine
