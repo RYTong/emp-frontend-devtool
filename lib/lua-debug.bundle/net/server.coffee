@@ -87,11 +87,14 @@ initial = (oSocket) ->
   # 判断 如果为第一个链接的设备, 并且 断点数 > 0, 则不立刻运行 (会在回调中加入断点, 并发送 run)
   # 否则发送 run, 不阻塞
   # unless (_.size(_aSocketArr) is 1) and (_.size(_oBPMaps) > 0)
+  send_specify(oSocket, "SETPORT #{oSocket.remotePort}\n")
   initialRun(oSocket)
+
 
 
 do_preprocess = (sData) ->
   newDataArr = sData.split MSG_END_FLAG
+  # console.log "do process ======="
   for sEleData in newDataArr
     if sEleData.trim().length > 2
       process_msg(sEleData)
@@ -124,7 +127,7 @@ process_msg = (sData) ->
           else
             log("else state:#{sState}", oRe)
       catch error
-        log("error data\n", sEleData)
+        log("error data=========: ", sData)
         console.error error
 
 storeSocket = (oSocket)=>
@@ -158,6 +161,9 @@ getAllBP = (sKey) =>
 
 initialRun = (oSocket) =>
   oSocket.write(emp.LUA_MSG_RUN)
+
+send_specify = (oSocket, sMsg) =>
+  oSocket.write(sMsg)
 
 module.exports =
   start:() ->

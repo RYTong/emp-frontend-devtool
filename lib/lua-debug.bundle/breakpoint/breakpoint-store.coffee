@@ -34,7 +34,6 @@ class BreakpointStore
       d = oEditor.decorateMarker(marker, type: "line-number", class: "line-number-blue")
       d.setProperties(type: "line-number", class: "line-number-blue")
       oBP.decoration = d
-      # oBP.decorationLine = dL
       @addBPEmit(oBP)
     else
       # oEditor = atom.workspace.getActiveTextEditor()
@@ -80,23 +79,31 @@ class BreakpointStore
     # oEditor?.setCursorScreenPosition(oPoint)
     if oEditor
       # console.log oEditor
-
       atom.workspace.open(oEditor.getPath(), { changeFocus:true }).then (oNewEditor) =>
         # console.log "after editor open", oNewEditor
         oNewEditor?.setCursorBufferPosition(oPoint)
-
         unless !tmpD=oNewEditor.decorationLine
-          # console.log oNewEditor.emp_decoration
-          # tmpD = oNewEditor.emp_decoration
           tmpMarker = tmpD.getMarker()
-          tmpMarker.destroy() #if tmpMarker.getBufferRange().start.row == oBP.iLine-1
+          tmpMarker?.destroy() #if tmpMarker.getBufferRange().start.row == oBP.iLine-1
 
+        unless !tmpDLN=oNewEditor.decorationLineNum
+          tmpMarker = tmpDLN.getMarker()
+          tmpMarker?.destroy()
+
+        # mark the line
         marker = oNewEditor.markBufferPosition([oPoint.row, 0])
         # console.log marker
         dL = oNewEditor.decorateMarker(marker, type: "line", class: "line-step")
         # console.log dL
         dL.setProperties(type: "line", class: "line-step")
         oNewEditor.decorationLine = dL
+
+        # mark the linum
+        unless @oBPMaps[sFileName][iLineNum]
+          markerLN = oNewEditor.markBufferPosition([oPoint.row, 0])
+          dLN = oNewEditor.decorateMarker(markerLN, type: "line-number", class: "line-number-step")
+          dLN.setProperties(type: "line-number", class: "line-number-step")
+          oNewEditor.decorationLineNum = dLN
 
         @oEditors[sShortFileName] = oNewEditor
 
@@ -122,23 +129,26 @@ class BreakpointStore
           # console.log "after editor open", oNewEditor
           oNewEditor?.setCursorBufferPosition(oPoint)
 
-          unless !tmpD=oTmpEditor.decorationLine
-            # console.log oNewEditor.decorationLine
-            # tmpD = oTmpEditor.decorationLine
+          unless (!tmpD=oTmpEditor.decorationLine) or (!tmpD =oNewEditor.decorationLine)
             tmpMarker = tmpD.getMarker()
             tmpMarker.destroy() #if tmpMarker.getBufferRange().start.row == oBP.iLine-1
 
-          unless !tmpD =oNewEditor.decorationLine
-            # console.log oNewEditor.decorationLine
-            tmpMarker = tmpD.getMarker()
-            tmpMarker.destroy() #if tmpMarker.getBufferRange().start.row == oBP.iLine-1
+          unless (!tmpDLN=oTmpEditor.decorationLineNum) or (!tmpDLN=oNewEditor.decorationLineNum)
+            tmpMarker = tmpDLN.getMarker()
+            tmpMarker?.destroy()
 
+          # mark the line
           marker = oNewEditor.markBufferPosition([oPoint.row, 0])
-          # console.log marker
           dL = oNewEditor.decorateMarker(marker, type: "line", class: "line-step")
-          # console.log dL
           dL.setProperties(type: "line", class: "line-step")
           oNewEditor.decorationLine = dL
+
+          # mark the linum
+          unless @oBPMaps[sFileName][iLineNum]
+            markerLN = oNewEditor.markBufferPosition([oPoint.row, 0])
+            dLN = oNewEditor.decorateMarker(markerLN, type: "line-number", class: "line-number-step")
+            dLN.setProperties(type: "line-number", class: "line-number-step")
+            oNewEditor.decorationLineNum = dLN
 
           @oEditors[sShortFileName] = oNewEditor
       else
@@ -202,6 +212,9 @@ class BreakpointStore
       unless !tmpD=oEditor.decorationLine
         tmpMarker = tmpD.getMarker()
         tmpMarker.destroy()
+      unless !tmpDLN=oEditor.decorationLineNum
+        tmpMarker = tmpDLN.getMarker()
+        tmpMarker?.destroy()
 
   addBPEmit:(bp) ->
     # console.log "add bp emit"
