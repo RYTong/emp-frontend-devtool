@@ -141,7 +141,7 @@ local iscasepreserving = win or (mac and io.open('/library') ~= nil)
 if jit and jit.off then jit.off() end
 
 local socket = require "socket"
-local local_port
+local_port=nil
 local coro_debugger
 local coro_debugee
 local coroutines = {}; setmetatable(coroutines, {__mode = "k"}) -- "weak" keys
@@ -1158,6 +1158,7 @@ local function debugger_loop(sev, svars, sfile, sline)
       coroyield("exit")
     elseif command == "SETPORT" then
       -- server:send("200 OK\n")
+      -- print(" set port is +++:", line)
       local _, _, _, iPort = string.find(line, "^([A-Z]+)%s+(%d+)%s*$")
       local_port = iPort
       send_ok({msg="OK"})
@@ -1394,7 +1395,12 @@ end
 
 function startLuaDebugger (controller_host, controller_port)
   -- only one debugging session can be run (as there is only one debug hook)
-  if isrunning() then return local_port end
+  if isrunning() then
+    if not local_port then
+      local_port = server:getlocalport()
+    end
+    return local_port
+  end
 
   lasthost = controller_host or lasthost
   lastport = controller_port or lastport
@@ -1442,8 +1448,10 @@ function startLuaDebugger (controller_host, controller_port)
     --@doc timer:startTimer(interval, repeats, run, delay)
     globalSyncTimer = timer:startTimer(3,1,timerRun, 5)
     -- print("start successed!")
-    local_port = server:getlocalport()
-    return local_port
+    -- local_port = server:getlocalport()
+    -- print("get port is :", local_port)
+    -- return local_port
+    return
   else
     print(("Could not connect to %s:%s: %s")
     :format(controller_host, controller_port, err or "unknown error"))
