@@ -1156,6 +1156,11 @@ local function debugger_loop(sev, svars, sfile, sline)
       send_ok({msg="OK"})
       -- server:send("200 OK\n")
       coroyield("exit")
+    elseif command == "SETPORT" then
+      -- server:send("200 OK\n")
+      local _, _, _, iPort = string.find(line, "^([A-Z]+)%s+(%d+)%s*$")
+      local_port = iPort
+      send_ok({msg="OK"})
     else
       send_err("400", "Bad Request")
       -- server:send("400 Bad Request\n")
@@ -1436,7 +1441,7 @@ function startLuaDebugger (controller_host, controller_port)
     step_into = true -- start with step command
     --@doc timer:startTimer(interval, repeats, run, delay)
     globalSyncTimer = timer:startTimer(3,1,timerRun, 5)
-    print("start successed!")
+    -- print("start successed!")
     local_port = server:getlocalport()
     return local_port
   else
@@ -1466,7 +1471,7 @@ function stopLuaDebugger ()
   -- body...
   timer:stopTimer(globalSyncTimer);
   globalSyncTimer = nil;
-  print("stop Lua debugger --------- ")
+  -- print("stop Lua debugger --------- ")
   if not (isrunning() and server) then return end
   if not jit then
     for co, debugged in pairs(coroutines) do
@@ -1480,7 +1485,7 @@ function stopLuaDebugger ()
   seen_hook = nil -- to make sure that the next start() call works
   abort = nil -- to make sure that callback calls use proper "abort" value
   local_port = nil -- reset the localport
-    print("stop Lua debugger successed--------- ")
+    -- print("stop Lua debugger successed--------- ")
   return true
 end
 

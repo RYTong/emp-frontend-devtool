@@ -29,9 +29,12 @@ class VarEleLiView extends View
     @sShowType = "text"
     if typeof(@sVal) is "object"
       # console.log "is obj"
-      @sShowType = "object"
+      @sShowType = "table"
       @li_view.addClass('icon-triangle-right')
-      for sTmpKey, sTmpVal of @sVal
+      aKeys = _.keys(@sVal).sort()
+      for sTmpKey in aKeys
+        # for sTmpKey, sTmpVal of @sVal
+        sTmpVal = @sVal[sTmpKey]
         # if typeof(sTmpVal) isnt "object"
         # console.log "isnt obj", sKey, sVal
         vEleView = new VarEleLiView(sTmpKey, sTmpVal)
@@ -49,7 +52,7 @@ class VarEleLiView extends View
 
   show_var_detail:() ->
     # console.log "show_var_view"
-    unless @sShowType isnt 'object'
+    unless @sShowType isnt 'table'
       if @ul_list.isVisible()
         @ul_list.hide()
         @li_view.addClass('icon-triangle-right')
@@ -66,7 +69,7 @@ class VarEleLiView extends View
 
     # console.log typeof(sNVal), @sShowType
     if typeof(sNVal) is 'object'
-      if @sShowType is 'object'
+      if @sShowType is 'table'
         for sOKey, sOVal of @oStoreView
           if not sNVal[sOKey]
             sOVal.view.destroy()
@@ -96,10 +99,10 @@ class VarEleLiView extends View
           @ul_list.append vEleUlView
 
       @sVal = sNVal
-      @sShowType = 'object'
+      @sShowType = 'table'
 
     else
-      if @sShowType is 'object'
+      if @sShowType is 'table'
         @li_view.removeClass('icon-triangle-right')
         @li_view.removeClass('icon-triangle-down')
         @ul_list.empty()

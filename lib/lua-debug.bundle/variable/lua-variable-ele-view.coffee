@@ -17,7 +17,10 @@ class VarEleView extends View
     # console.log @ul_list
     # console.log @oReList
     @oStoreView={}
-    for sKey, sVal of @oReList
+    aKeys = _.keys(@oReList).sort()
+    # console.log aKeys
+    for sKey in aKeys
+      sVal = @oReList[sKey]
       # if typeof(sVal) isnt "object"
       #   console.log "isnt obj", sKey, sVal
       #   vEleView = new VarEleLiView(sKey, sVal)
@@ -25,6 +28,7 @@ class VarEleView extends View
       #   # for sK, sV of sVal
       # else
       #   console.log "is obj", sKey, sVal
+
       vEleUlView = new VarEleLiView(sKey, sVal)
       @oStoreView[sKey] = @new_store_obj(sVal, vEleUlView)
       @ul_list.append vEleUlView
@@ -61,7 +65,16 @@ class VarEleView extends View
         # @oStoreView[sKey]
         vEleUlView = new VarEleLiView(sKey, sVal)
         @oStoreView[sKey] = @new_store_obj(sVal, vEleUlView)
-        @ul_list.append vEleUlView
+
+        aStoreKeys = _.keys(@oStoreView).sort()
+        if aStoreKeys.length > 1
+          iIndex = aStoreKeys.indexOf(sKey)
+          if iIndex is 0
+            @oStoreView[aStoreKeys[1]].view.before vEleUlView
+          else
+            @oStoreView[aStoreKeys[iIndex-1]].view.after vEleUlView
+        else
+          @ul_list.append vEleUlView
 
 
   # format_list: (tmpK, tmpV)->
