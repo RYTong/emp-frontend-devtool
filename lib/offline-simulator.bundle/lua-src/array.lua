@@ -1,4 +1,5 @@
 local inherit = require('./inherit.lua');
+local _ = require('./underscore.lua');
 
 local Array = {};
 
@@ -31,7 +32,13 @@ Array.shift = function(self)
 end
 
 Array.unshift = function(self)
-  --TODO
+  _.each(self, function(i, v)
+    if i ~= 1 then
+      self[i-1] = v
+    end
+  end)
+
+  self[#self] = nil
 end
 
 Array.remove = function(self, index)

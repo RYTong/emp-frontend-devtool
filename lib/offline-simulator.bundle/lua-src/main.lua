@@ -1,11 +1,18 @@
 local inspect = require('./inspect.lua')
 local string = require('./string.lua')
 local _ = require('./underscore.lua')
+local Array = require('./array.lua')
 
 local log = function(...)
+  local args = {...}
+  if (type(args[1]) == 'table' and args[1].gfile == 'ert.lua') then
+    _print('ignore ert object')
+    Array.unshift(args)
+  end
+
   local upFrame = string.split(debug.traceback('[call at]',2), '\n')[3];
   _print(string.trim(upFrame));
-  _print(_.reduce({...}, function(_k, v, acc)
+  _print(_.reduce(args, function(_k, v, acc)
     local val = v;
 
     if type(v) ~= 'string' then
@@ -28,4 +35,8 @@ _G.openInTextEditor = function(path)
     "command",
     "path="..utility:escapeURI(path)
   );
+end
+
+
+test = function(...)
 end

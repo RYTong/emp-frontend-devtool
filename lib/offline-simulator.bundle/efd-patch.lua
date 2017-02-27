@@ -48,11 +48,17 @@ function(module, exports, __luapack_require__)
   local inspect = __luapack_require__(2)
   local string = __luapack_require__(3)
   local _ = __luapack_require__(4)
+  local Array = __luapack_require__(6)
   
   local log = function(...)
+    local args = {...}
+    if (type(args[1]) == 'table' and args[1].gfile == 'ert.lua') then
+      Array.unshift(args)
+    end
+    
     local upFrame = string.split(debug.traceback('[call at]',2), '\n')[3];
     _print(string.trim(upFrame));
-    _print(_.reduce({...}, function(_k, v, acc)
+    _print(_.reduce(args, function(_k, v, acc)
       local val = v;
   
       if type(v) ~= 'string' then
@@ -75,6 +81,10 @@ function(module, exports, __luapack_require__)
       "command",
       "path="..utility:escapeURI(path)
     );
+  end
+  
+  
+  test = function(...)
   end
 end,
 ---- (2) ----
@@ -592,6 +602,7 @@ end,
 function(module, exports, __luapack_require__)
   module.filename = '/Users/lujingbo/src/atomwork/emp-frontend-devtool/lib/offline-simulator.bundle/lua-src/array.lua';
   local inherit = __luapack_require__(5);
+  local _ = __luapack_require__(4);
   
   local Array = {};
   
@@ -624,7 +635,13 @@ function(module, exports, __luapack_require__)
   end
   
   Array.unshift = function(self)
-    --TODO
+    _.each(self, function(i, v)
+      if i ~= 1 then
+        self[i-1] = v
+      end
+    end)
+  
+    self[#self] = nil
   end
   
   Array.remove = function(self, index)
