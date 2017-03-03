@@ -176,7 +176,7 @@ module.exports = class LuaDebugView extends View
     vView = @vClientMap[peer]
 
     sNewName = oDetail?.token + " (#{oDetail?.deviceInfo})"
-    vView.text(sNewName)
+    vView?.text(sNewName)
 
   add_option:(peer, bIsSel=false) ->
     console.log peer
