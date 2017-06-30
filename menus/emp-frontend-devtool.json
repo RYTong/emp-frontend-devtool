@@ -19,7 +19,16 @@
         "label": "关闭日志面板",
         "command": "emp-frontend-devtool:toggle-log"
       }
-    ]
+  ],
+  ".tree-view .full-menu": [
+  {"label": "EMP",
+   "submenu":[
+       {"label": "New Less File", "command": "emp-frontend-devtool:creat_less"},
+       {"label": "Compile All Less", "command": "emp-frontend-devtool:compile_aless"},
+       {"label": "Compile The Single Less", "command": "emp-frontend-devtool:compile_sless"}
+   ]}
+  ]
+
   },
   "menu": [
     {
