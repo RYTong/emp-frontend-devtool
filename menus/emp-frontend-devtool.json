@@ -27,9 +27,14 @@
        {"label": "Compile All Less", "command": "emp-frontend-devtool:compile_aless"},
        {"label": "Compile The Single Less", "command": "emp-frontend-devtool:compile_sless"}
    ]}
+  ],
+  "atom-text-editor":[
+      {"label": "EMP",
+       "submenu":[
+           {"label": "Compile All Less", "command": "emp-frontend-devtool:compile_aless"}
+       ]}
   ]
-
-  },
+},
   "menu": [
     {
       "label": "Packages",
