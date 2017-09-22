@@ -2,7 +2,7 @@
 
 net = require('net');
 _ = require('underscore-plus')
-emp = require '../global/emp'
+emp = require '../../global/emp'
 detect = require 'detect-port'
 
 DEFAULT_PORT = '8172'

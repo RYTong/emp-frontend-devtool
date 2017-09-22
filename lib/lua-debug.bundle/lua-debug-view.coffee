@@ -3,7 +3,7 @@
 BPEleView = require './bp-ele-view'
 StepDetailView = require './lua-debug-step-view'
 LuaDebugVarView = require './variable/lua-variable-view'
-emp = require './global/emp'
+emp = require '../global/emp'
 oServer = require './net/server'
 socketEmitter = require '../socket-emitter'
 socketEmit = socketEmitter.getEmit('lua-debugger')

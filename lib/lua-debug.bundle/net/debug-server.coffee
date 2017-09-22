@@ -3,7 +3,7 @@
 net = require('net');
 fs = require 'fs'
 _ = require('underscore-plus')
-emp = require '../global/emp'
+emp = require '../../global/emp'
 DEFAULT_HOST = 'default'
 DEFAULT_PORT = '8172'
 DEFAULT_TIMEOUT = 14400000

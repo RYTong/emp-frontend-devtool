@@ -1,5 +1,5 @@
 {CompositeDisposable} = require 'atom'
-emp = require './global/emp'
+emp = require '../global/emp'
 Breakpoint = require './breakpoint/breakpoint'
 
 module.exports =
