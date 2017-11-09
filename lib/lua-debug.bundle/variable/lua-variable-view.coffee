@@ -4,7 +4,7 @@
 
 VarEleView = require './lua-variable-ele-view'
 
-emp = require '../global/emp'
+emp = require '../../global/emp'
 
 module.exports = class LuaDebugVarView extends View
 

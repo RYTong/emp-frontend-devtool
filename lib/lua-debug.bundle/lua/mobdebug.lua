@@ -1446,7 +1446,7 @@ function startLuaDebugger (controller_host, controller_port)
     seen_hook = nil -- reset in case the last start() call was refused
     step_into = true -- start with step command
     --@doc timer:startTimer(interval, repeats, run, delay)
-    globalSyncTimer = timer:startTimer(3,1,timerRun, 5)
+    -- globalSyncTimer = timer:startTimer(3,1,timerRun, 5)
     -- print("start successed!")
     -- local_port = server:getlocalport()
     -- print("get port is :", local_port)
@@ -1477,7 +1477,7 @@ end
 
 function stopLuaDebugger ()
   -- body...
-  timer:stopTimer(globalSyncTimer);
+  -- timer:stopTimer(globalSyncTimer);
   globalSyncTimer = nil;
   -- print("stop Lua debugger --------- ")
   if not (isrunning() and server) then return end

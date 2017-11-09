@@ -1,5 +1,5 @@
 {CompositeDisposable} = require 'atom'
-emp = require './global/emp'
+emp = require '../global/emp'
 server = require './net/server'
 
 

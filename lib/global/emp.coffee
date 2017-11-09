@@ -27,6 +27,9 @@ module.exports =
   UP_VAR_VIEW_NAME:"UP Variables"
   GLOBAL_VAR_VIEW_NAME:"Global Variables"
 
+  # less
+  DEFAULT_LESS_NAME:'untitled.less'
+  DEFAULT_OUT_LESS_PATH:'../css/untitled.css'
 
   get_pack_path: () ->
     atom.packages.resolvePackagePath(this.PACKAGE_NAME)
