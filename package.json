@@ -74,7 +74,8 @@
     "react-redux": "^4.4.6",
     "redux": "^3.6.0",
     "shelljs": "^0.7.4",
-    "underscore-plus": "1.x"
+    "underscore-plus": "1.x",
+    "fs-plus":"*"
   },
   "devDependencies": {
     "standard": "^8.6.0"
