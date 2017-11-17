@@ -1,6 +1,7 @@
 {CompositeDisposable} = require 'atom'
 emp = require '../global/emp'
 Breakpoint = require './breakpoint/breakpoint'
+_ = require 'underscore-plus'
 
 module.exports =
 class LuaEditor
@@ -27,8 +28,11 @@ class LuaEditor
 
     tmpGutter = tmpEditor.addGutter({ name: 'lua-debug', priority: -100 })
 
-    gutterView = atom.views.getView(tmpGutter)
-    gutterView.addEventListener 'click', (ev)=> @onGutterClick(tmpEditor, ev)
+    aGutters = tmpEditor.getGutters();
+
+    _.each aGutters, (gutter) =>
+        gutterView = atom.views.getView(gutter)
+        gutterView.addEventListener 'click', (ev)=> @onGutterClick(tmpEditor, ev)
     @resumeEditor(tmpEditor)
 
   onGutterClick:(editor, ev) =>
