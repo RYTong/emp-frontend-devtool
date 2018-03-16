@@ -144,13 +144,13 @@ module.exports = class LuaDebugView extends View
 
       console.log "set-peer-connect-handler:", peer, peers
       #
-      # if _.size(peers) is 1
-      # #   # 如果为第一个 id 则设为默认的选中
-      #   @sSelectClient = peer
-      #   @add_option peer, true
-      #   @setSelectClient(peer)
-      # else
-      @add_option peer
+      if _.size(@vClientMap) is 0
+        # 如果为第一个 id 则设为默认的选中
+        @sSelectClient = peer
+        @add_option peer, true
+        @setSelectClient(peer)
+      else
+        @add_option peer
       @select_div.show()
       @state_div.hide()
 
